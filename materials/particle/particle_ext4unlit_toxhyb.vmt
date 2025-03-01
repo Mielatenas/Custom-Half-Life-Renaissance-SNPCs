@@ -1,0 +1,10 @@
+"UnlitGeneric"
+{
+	"$basetexture" "particle/particle_ext4unlit_toxhyb"
+	"$envmap" "particle/particle_ext4unlit_toxhyb_mask"
+	"$envmapsphere" 1
+	"$model" 0
+	"$additive" 1
+	"$nodecal" 1
+	"$no_fullbright" 1
+}
