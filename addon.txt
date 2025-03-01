@@ -1,0 +1,6 @@
+"AddonInfo"
+{
+	"name" "[VJ] Custom Half-Life Renaissance SNPCs"
+	"author_name" "Author Name"
+	"info" "{ 	"description": "Description", 	"type": "npc", 	"tags": [ 		"fun", 		"realism" 	] }"
+}
