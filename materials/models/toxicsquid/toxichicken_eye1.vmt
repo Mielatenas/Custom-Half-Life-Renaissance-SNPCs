@@ -1,0 +1,6 @@
+"Vertexlitgeneric"
+{
+	"$baseTexture" "models/toxicsquid/toxichicken_eye1"
+	"$selfillum" 1
+	"$selfillummask" "models/toxicsquid/toxichicken_eye1_g"
+}

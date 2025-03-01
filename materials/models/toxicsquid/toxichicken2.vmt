@@ -1,0 +1,5 @@
+"Vertexlitgeneric"
+{
+	"$baseTexture" "models/toxicsquid/toxichicken2"
+	"$bumpmap" "models/toxicsquid/toxichicken2_normal"
+}
