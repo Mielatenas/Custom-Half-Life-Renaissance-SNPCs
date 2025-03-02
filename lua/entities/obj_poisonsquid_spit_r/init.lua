@@ -11,7 +11,7 @@ ENT.DoesRadiusDamage = true
 ENT.RadiusDamageRadius = 50
 ENT.RadiusDamage = 5
 ENT.RadiusDamageUseRealisticRadius = true
-ENT.RadiusDamageType = DMG_BLAST
+ENT.RadiusDamageType = DMG_DIRECT
 ENT.RadiusDamageForce = 3 -- Put the force amount it should apply | false = Don't apply any force
 ENT.DoesDirectDamage = true -- Should it do a direct damage when it hits something?
 ENT.DirectDamage = 1 -- How much damage should it do when it hits something

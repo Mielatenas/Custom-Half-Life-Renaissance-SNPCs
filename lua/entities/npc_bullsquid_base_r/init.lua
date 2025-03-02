@@ -475,19 +475,19 @@ function ENT:MultipleRangeAttacks() -- next time use function ENT:CustomRangeAtt
 			self.bInSchedule = false
 			self.DisableDefaultRangeAttackCode = false
 			self.nextBsSpitAttack = CurTime() +0.4
-			    if self.IsPoisonBs then 
+			if self.IsPoisonBs then 
 				self.NextRangeAttackTime = 1.0 
 			    self.TimeUntilRangeAttackProjectileRelease = 0.55 
 			    self.NextAnyAttackTime_Range = false
                 self.NextAnyAttackTime_Range_DoRand = false
-                end
+            end
 			self.AnimTbl_RangeAttack = {ACT_RANGE_ATTACK1}
 			self:VJ_ACT_PLAYACTIVITY(ACT_SPECIAL_ATTACK2, true, 0.4, true)
 			self:StopParticles()
 			if self.FlameSd then self.loopsd:Stop() end
 
 		end
-		    // Flame is on, Set an extra validation if enemy is visible, they do the flame even tho the enemy is behind a wall--add traceline
+		    // Flame is on, Set an extra validation if enemy is visible, they do the flame even if the enemy is behind a wall--add traceline
 		if isnumber(self.DistoEnemy) and self.Flinching==false then 
 		    if self.CanUseFlame == true and !self.IsHybrid and self.DistoEnemy >= self.MeleeAttackDistance then /*and self.DistoEnemy < self.fRangeDistanceFlame and VJ_FindInCone(self:GetPos(), self:GetForward() or self.BsValidCurEnemy:GetForward(), 600, self.FlameConeDmgDegree or 90, {AllEntities=true})*/
 	            local size = 60+ self.fRangeDistanceFlame

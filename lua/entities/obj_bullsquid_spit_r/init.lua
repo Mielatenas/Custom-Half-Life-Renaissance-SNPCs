@@ -249,15 +249,14 @@ function ENT:CustomOnPhysicsCollide(data, phys)
 	self.data = data
 	local entHit = data.HitEntity 
     local dmgorigin = self:GetPos()
+    local IsTanknoBone = entHit:LookupBone("static_prop")==0
     self.wHitNormal = data.HitNormal
-
     self.hitPos = data.HitPos
 
 	if IsValid(self.phys) then
-	    --self.phys:SetMass(1)
         self.phys:EnableDrag(true)
         self.phys:SetDragCoefficient(55)
-        if IsValid(entHit) and (VJ_IsProp(entHit) or entHit:GetClass():sub(1, 5) == "prop_" ) and (!entHit:IsRagdoll() or !entHit:GetClass() == "prop_ragdoll") then
+        if IsValid(entHit) and (IsTanknoBone or VJ_IsProp(entHit) or entHit:GetClass():sub(1, 5) == "prop_" ) and (!entHit:IsRagdoll() or !entHit:GetClass() == "prop_ragdoll") then
             self:SetPos(self.hitPos)
             self:SetParent(entHit)
 	    end
@@ -269,7 +268,7 @@ function ENT:CustomOnPhysicsCollide(data, phys)
             end 
         end
     end
-	if IsValid(entHit) and !VJ_IsProp(entHit) && (self.BullOwner.ToxicBull==true) and (entHit:IsPlayer() || entHit:IsNPC() || entHit:IsNextBot() || (entHit:IsRagdoll() or entHit:GetClass() == "prop_ragdoll")) then
+	if IsValid(entHit) and (!VJ_IsProp(entHit) and IsTanknoBone==false) && (self.BullOwner.ToxicBull==true) and (entHit:IsPlayer() || entHit:IsNPC() || entHit:IsNextBot() || (entHit:IsRagdoll() or entHit:GetClass() == "prop_ragdoll")) then
           --print(entHit:GetBoneCount())
 		    --self:SetNWEntity("entStart", entHit) -- deactivated
 		if self.closestBoneIndex==nil and self.BullOwner:Disposition(entHit) <= 2 then --and self.BullOwner:Disposition(entHit) <= 2

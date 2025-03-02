@@ -10,7 +10,7 @@ ENT.DoesRadiusDamage = true
 ENT.RadiusDamageRadius = 30
 ENT.RadiusDamage = 6
 ENT.RadiusDamageUseRealisticRadius = true
-ENT.RadiusDamageType = DMG_SLOWBURN
+ENT.RadiusDamageType = DMG_DIRECT
 ENT.RadiusDamageForce = 4 -- Put the force amount it should apply | false = Don't apply any force
 ENT.DoesDirectDamage = true -- Should it do a direct damage when it hits something?
 ENT.DirectDamage = 1 -- How much damage should it do when it hits something

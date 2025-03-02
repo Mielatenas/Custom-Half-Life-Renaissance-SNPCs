@@ -17,9 +17,9 @@ function ENT:Think()
 	for i=1,3 do
 	local particle = self.emitter:Add("slimesplat_napalm", self:GetPos())
  	    if particle then
- 		    particle:SetVelocity(VectorRand() *math.Rand(0, 200))
+ 		    particle:SetVelocity(VectorRand(-100, 100) ) --particle:SetVelocity(VectorRand() *math.Rand(0, 200))
  	    	particle:SetLifeTime(0)
- 	    	particle:SetDieTime(math.Rand(0.3, 0.5))
+ 	    	particle:SetDieTime(0.5)
  	    	particle:SetStartAlpha(150)
  	    	particle:SetEndAlpha(0)
  	    	particle:SetStartSize(15)

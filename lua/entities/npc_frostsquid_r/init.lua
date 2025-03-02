@@ -67,11 +67,11 @@ end
 function ENT:CustomOnThink()
 	//self:UpdateLastEnemyPositions()
 	if self.bInSchedule and self.FlameOn then
-	local effect = EffectData()
-	effect:SetStart(self:GetAttachment(1).Pos)
-	effect:SetNormal(self:GetForward())
-	effect:SetEntity(self)
-	effect:SetAttachment(1)
-	util.Effect("effect_ice_spray",effect)
+		local effect = EffectData()
+		effect:SetStart(self:GetAttachment(1).Pos)
+		effect:SetNormal(self:GetForward())
+		effect:SetEntity(self)
+		effect:SetAttachment(1)
+		util.Effect("effect_ice_spray",effect)
     end
 end

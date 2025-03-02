@@ -25,8 +25,13 @@ function ENT:Think()
  		particle:SetStartSize(10)
  		particle:SetEndSize(5)
  		particle:SetRoll(math.Rand(0, 360))
- 		particle:SetAirResistance(400)
- 		particle:SetGravity(Vector(0, 0, -200))
+ 		if self:WaterLevel() == 3 then 
+            particle:SetGravity(Vector(0, 0, -50))
+            particle:SetAirResistance(3000)
+        else 
+            particle:SetAirResistance(400)
+            particle:SetGravity(Vector(0, 0, -200))
+        end
  	end
     end
 end
