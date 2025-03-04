@@ -36,8 +36,7 @@ ENT.CustomModelScale = VJ_Set(1.5, 5)
 ENT.nextToxicDmgT = 0
 local CustomHLRmaxTmines = 70
 
-function CustomHLRCountAndLimitToxmines()
-    -- Find all entities of the specified class
+local function CustomHLRCountAndLimitToxmines()
     local curTmines = ents.FindByClass("obj_bullsquid_spit_r")
     local entityCount = 0
     for _, ent in ipairs(curTmines) do
@@ -45,10 +44,8 @@ function CustomHLRCountAndLimitToxmines()
     end
     -- Check if the maximum number of entities has been reached
     if entityCount >= CustomHLRmaxTmines then
-       -- print("Maximum number of entities reached. Cannot create more.")
-        return false -- Return false to indicate that new entities should not be created
+        return false
     else
-        --print("Current entity count: " .. entityCount)
         return true -- Return true to indicate that new entities can be created
     end
 end
@@ -57,12 +54,6 @@ function ENT:CustomOnPreInitialize()
 	CustomHLRmaxTmines = hlrcustomToxicminesMax
     self.BullOwner = self:GetOwner()
     self.VJ_OwnerClassTbl = self.BullOwner.VJ_NPC_Class
-	if !CustomHLRCountAndLimitToxmines() then
-        if IsValid(self) then
-           -- self:Remove()
-            --ToxicMinesCount = ToxicMinesCount - 1
-        end
-    end	
 end
 
 function ENT:CustomOnInitialize()
@@ -163,8 +154,8 @@ function ENT:CustomOnThink()
             self.UpdateToxBomb_CustomHLR = true
         end
     end
-    if IsValid(self.entHit) and (self.entHit:IsPlayer()) then
-    	if !self.entHit:Alive() then
+    if IsValid(self.entHit) then
+    	if !self.entHit:Alive() and (self.entHit:IsPlayer()) then
     	    if self.data then
 	        self:CustomHlrToxicGasDeath(self.data, phys, dmgorigin)-- destroy itself if player died
 	        else
@@ -390,4 +381,7 @@ function ENT:CustomHlrToxicGasDeath(data, phys, dmgorigin)
 	self:EmitSound("npc/bullsquid/splat" .. math.random(1,2) .. ".wav", 40, math.random(self.ToxicDeathSoundPitch.a, self.ToxicDeathSoundPitch.b))
 	SafeRemoveEntityDelayed( self, 0.1 )
  end
+function ENT:CustomOnRemove()
+self:CustomHlrToxicGasDeath(self.data, phys, dmgorigin)
+end
 
