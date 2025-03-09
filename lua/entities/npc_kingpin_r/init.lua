@@ -161,8 +161,8 @@ function ENT:CustomOnInitialize()
     	ForKingpinbool=nil
     end 
 end
-
-function ENT:ScaleDamage(dmginfo, hitgroup)
+/*
+function ENT:ScaleDamage(dmginfo, hitgroup) --unused, check in vj base
 	if hitgroup == HITBOX_HEAD then
 		dmginfo:ScaleDamage(2)
 	elseif hitgroup == HITBOX_GEAR then dmginfo:SetDamage(0)
@@ -177,7 +177,7 @@ function ENT:ScaleDamage(dmginfo, hitgroup)
 	local dist = self:OBBCenter():Distance(inflictor:GetPos() +inflictor:OBBCenter())
 	if dist >= r then dmginfo:ScaleDamage(0.05) end
 end
-
+*/
 function ENT:DisableShield()
 	if IsValid(self.entShield) then self.entShield:SetNoDraw(true); self.bShieldActive = false end
 end
@@ -203,13 +203,11 @@ function ENT:SetShieldPower(nPower)
 end
 
 function ENT:CustomOnFlinch_BeforeFlinch(dmginfo, hitgroup) -- Return false to disallow the flinch from playing
-	//if self.bInSchedule then return end
-	self:InterruptBeam()
-	self:StopAttack()
-	//self:VJ_ACT_PLAYACTIVITY(ACT_SIGNAL_HALT, true)
+	self:KingpinRenaissanceInterruptBeam()
+	--self:StopAttack()
 	self.nextPlayerThrow = CurTime() +math.Rand(8,12)
 end
-
+/*
 function ENT:StopAttack()
 	if self.bThrowPlayer && IsValid(self.entEnemy) && self.entEnemy:IsPlayer() then
 		self.entEnemy:SetGravity(1)
@@ -226,7 +224,7 @@ function ENT:StopAttack()
 	end
 	self.bThrowPlayer = false
 end
-
+*/
 function ENT:ActivateShield()
 	//self:SetInvincible(true)
 	ParticleEffectAttach("kingpin_psychic_shield_idle", PATTACH_ABSORIGIN_FOLLOW, self, 0 )
@@ -241,9 +239,9 @@ function ENT:MindControl(ent)
 	
 end
 
-
+/*
 local velMax = {rpg_missile = 1500, obj_rpg = 1200, npc_grenade_frag = 1024, prop_combine_ball = 1000}
-function ENT:CustomOnThink()
+function ENT:CustomOnThink_AIEnabled()
 	if true then return end
 	if !self.bInSchedule && IsValid(self.entCurThrow) && !IsValid(self.entEnemy) then
 		self.entCurThrow:GetPhysicsObject():EnableGravity(true)
@@ -305,7 +303,7 @@ function ENT:CustomOnThink()
 				//THROW PLAYER
 				return
 			else*/
-				self:slvSetHealth(iHealth +1)
+/*		        self:slvSetHealth(iHealth +1)
 			//end
 			//IF DAMAGED THEN THROW PLAYER
 		end
@@ -426,10 +424,11 @@ function ENT:CustomOnThink()
 		self.entParticle = entParticle
 	end
 end
-
-function ENT:CustomOnThink_AIEnabled()
+*/
+function ENT:CustomOnThink()
 	if self.Dead then return end
 	local GetaTarget = self.entEnemy -- vj base internal enemy ent
+	local curTime = CurTime()
 	--print(self.entEnemy)
 	if !IsValid(GetaTarget) then
 		GetaTarget = self:GetEnemy()-- is a quicker way to update enemy but gives nil sometimes
@@ -449,7 +448,7 @@ function ENT:CustomOnThink_AIEnabled()
             self.HasMeleeAttack = true
             //self.HasRangeAttack = false
             //print(self.HasRangeAttack)
-                if CurTime() > self.nextThrow and self.KingPinCanDoNextAttack==true then
+                if curTime > self.nextThrow and self.KingPinCanDoNextAttack==true then
                 self:MultipleMeleeAttacks() end
             end
             if distToEne > self.RangeDistance then
@@ -467,71 +466,66 @@ function ENT:CustomOnThink_AIEnabled()
 	if self.bInSchedule && self.tblBeams then -- Have to fix why tracelines cut the beam direction and speed on high height cliffs 
 		if IsValid(self.entEnemy) then
 			GetaTarget = self.entEnemy
-		local posSelf = self:GetPos() -- not used on Beam
+			local posSelf = self:GetPos() -- not used on Beam
 		//print("posSelf: ", posSelf)		
-		//print("enemypos: ", self.entEnemy:WorldSpaceCenter())
-		//print("enemy class: ", self.entEnemy:GetClass())
-		//print("self.posBeam: ", self.posBeam)
 		--local Newenemypos = enemypos:Add(Vector(10000,0,0)) --enemypos+enemypos.y*1000
-		local normal = (self.posEnemyLast || self.entEnemy:WorldSpaceCenter() -self.posBeam):GetNormalized()
-		//print("normal: ", normal)		
-		local dist = self.entEnemy:NearestPoint(self.posBeam):Distance(self.posBeam)
+			local normal = (self.posEnemyLast || self.entEnemy:WorldSpaceCenter() -self.posBeam):GetNormalized()
+			local dist = self.entEnemy:NearestPoint(self.posBeam):Distance(self.posBeam)
 						--print("dist: ", dist)		
-		local speed = math.Clamp((dist /20) *20, 20, 350)
+			local speed = math.Clamp((dist /20) *20, 20, 350)
 				//print("speed: ", speed)		
-		local posTgt = self.posBeam +normal *speed
+			local posTgt = self.posBeam +normal *speed
 						//print("posTgt: ", posTgt)		
-		local attA = self:GetAttachment(self:LookupAttachment("clawleft"))
-		local attB = self:GetAttachment(self:LookupAttachment("clawright")) -- Ang, Bone and Pos table
-		self.attA = attA 
-		self.attB = attB 
+			local attA = self:GetAttachment(self:LookupAttachment("clawleft"))
+			local attB = self:GetAttachment(self:LookupAttachment("clawright")) -- Ang, Bone and Pos table
+			self.attA = attA 
+			self.attB = attB 
 				--PrintTable(self.attA)
-
-		self.attAPos = attA.Pos
+			self.attAPos = attA.Pos
 		--print(self.attAPos)
-		self.attBPos = attB.Pos
-		local pos = (self.attAPos +self.attBPos) *0.5
-		//print("pos: ", pos)		
-		local tr = util.TraceLine({start = pos, endpos = posTgt, filter = self})
-	    local newposTgt = tr.Normal *speed
-	    tr = util.TraceLine({start = pos, endpos = posTgt+newposTgt, filter = self})
+			self.attBPos = attB.Pos
+			local pos = (self.attAPos +self.attBPos) *0.5
+			//print("pos: ", pos)		
+			local tr = util.TraceLine({start = pos, endpos = posTgt, filter = self})
+	    	local newposTgt = tr.Normal *speed
+	    	tr = util.TraceLine({start = pos, endpos = posTgt+newposTgt, filter = self})
 			--self:DrawTraceLine(tr)	
 				--PrintTable(tr)	
 
-		if dist > 5 then
-			if !tr.Hit then
+			if dist > 5 then
+				if !tr.Hit then
 				--print("NO HIT")
 				tr = util.TraceLine({start = tr.HitPos +Vector(0,0,0), endpos = tr.HitPos -Vector(0,0,0), mask = MASK_NPCWORLDSTATIC})
-			else -- traceline hit pos
+				else -- traceline hit pos
 				--tr.HitPos = tr.HitPos +Vector(0,0,1) *speed 
 				--print("HIT")
-            end
-		end
-		local tblEnts = util.CustomHlrBlastDmg(self, self, tr.HitPos, 25, self.BeamDmg,
-		function(GetaTarget) -- have to test if works for nextbot
-			return (!GetaTarget:IsNPC() || self:Disposition(GetaTarget) <= 2) && (!GetaTarget:IsPlayer() || !tobool(GetConVarNumber("ai_ignoreplayers")))
-		end, DMG_DISSOLVE, false)
-		if table.Count(tblEnts) > 0 then
-			if !self.bHit then
-				self.cspBeamHit:Play()
-				self.bHit = true
+            	end
 			end
-		elseif self.bHit then
-			self.cspBeamHit:Stop()
-			self.bHit = false
-		end
-	    //print("self.posBeam, tr.HitPos: ", self.posBeam, tr.HitPos)
-		self.posBeam = tr.HitPos
-		self.entTarget:SetPos(self.posBeam)
-		--self.entBeam:SetPos(self.posBeam) -- allows Draw function to run on client since it spawns inside world, This wasn't here, draws blue beam to obj_target but is not the right way, it mess one of the attachments pos
-		--self.entBeam:SetStart(self.attAPos) -- the right position but server updates too slow, have to convert it on client
-        end
-	    if !IsValid(self.entEnemy) or !self.eneVisible then -- interrupt beam if no enemy or no visible, to change if will update the beam traceline 
-	        timer.Simple(self.NextRangeAttackTime, function()
-		        if IsValid(self) then self:InterruptBeam() end end)	
+			local tblEnts = util.CustomHlrBlastDmg(self, self, tr.HitPos, 25, self.BeamDmg,
+			function(GetaTarget) -- have to test if works for nextbot
+				return (!GetaTarget:IsNPC() || self:Disposition(GetaTarget) <= 2) && (!GetaTarget:IsPlayer() || !tobool(GetConVarNumber("ai_ignoreplayers")))
+			end, DMG_DISSOLVE, false)
+			if istable(tblEnts) and table.Count(tblEnts) > 0 then
+				if !self.bHit then
+					self.cspBeamHit:Play()
+					self.bHit = true
+				end
+			elseif self.bHit then
+				self.cspBeamHit:Stop()
+				self.bHit = false
+			end
+	    	//print("self.posBeam, tr.HitPos: ", self.posBeam, tr.HitPos)
+			self.posBeam = tr.HitPos
+			self.entTarget:SetPos(self.posBeam)
+			--self.entBeam:SetPos(self.posBeam) -- allows Draw function to run on client since it spawns inside world, This wasn't here, draws blue beam to obj_target but is not the right way, it mess one of the attachments pos
+			--self.entBeam:SetStart(self.attAPos) -- the right position but server updates too slow, have to convert it on client
+        end  
+	    if (!IsValid(self.entEnemy) or !self.eneVisible) then -- interrupt beam if no enemy or no visible, to change if will update the beam traceline 
+	        timer.Simple(2, function()
+		    if IsValid(self) then
+		    self:KingpinRenaissanceInterruptBeam() 
+            end end)
 	    end
-	else
-    //self:InterruptBeam()
 	end
 	if self:LookupBone("MDLDEC_Bone28") then -- move to client
 		LeftBpos = self:GetBonePosition(self:LookupBone("MDLDEC_Bone28"))+self.LEarBoneFollower:GetRight()*-10-- this gets the proper position, can't be used to attach a particle effect 
@@ -549,7 +543,7 @@ function ENT:CustomOnThink_AIEnabled()
 		    self.RightBpos = RightBpos
 		    self.REarBoneFollower:SetPos(RightBpos)
     	end 
-	self:NextThink(CurTime() +0.02)
+	self:NextThink(curTime +0.02)
 	self:SelectScheduleHandle(distToEne)
 	return true
 end
@@ -565,8 +559,10 @@ function ENT:StopAttackEffects()
 	if IsValid(self.entCurThrow) then self.entCurThrow:StopParticles() end
 end
 
-function ENT:KingpinOnDeath()
-	self:UpdatePhysicsEnts()
+function ENT:CustomOnRemove()
+	self:KingpinRenaissanceInterruptBeam()
+	--self:UpdatePhysicsEnts()
+	/*
 	for k, v in pairs(self.tblPhysEnts) do
 		local phys = v:GetPhysicsObject()
 		if IsValid(phys) then
@@ -575,21 +571,10 @@ function ENT:KingpinOnDeath()
 	end
 	if self.bThrowPlayer && IsValid(self.entEnemy) && self.entEnemy:IsPlayer() then
 		self.entEnemy:SetGravity(1)
-	end
+	end*/
 	self:StopAttackEffects()
-	self:DestroyBoneFollowers()
 end
-
-function ENT:CustomOnRemove()
-	hook.Remove( "PlayerSpawn", "PlayerSpawn_AddRelationship" .. self:EntIndex() )
-	hook.Remove( "OnEntityCreated", "OnEntityCreated_AddRelationship" .. self:EntIndex() )
-	//for k, v in pairs(self.tblCSPStopOnDeath) do
-	//	v:Stop()
-	//end
-	self:InterruptBeam()
-	self:KingpinOnDeath()
-end
-
+	/*
 function ENT:UpdatePhysicsEnts()
 	for k, v in pairs(self.tblPhysEnts) do
 		if !IsValid(v) then self.tblPhysEnts[k] = nil; if v == self.entCurThrow then self:StopAttackEffects() end
@@ -613,6 +598,7 @@ function ENT:UpdatePhysicsEnts()
 		end
 	end
 end
+*/
 function ENT:CustomOnAcceptInput(key, activator, caller, data)
 	    if key == "event_mattack left" or key == "event_mattack right" then
 		self.MeleeAttackDamage = self.MeleeKingpinDamage1
@@ -646,8 +632,8 @@ function ENT:MultipleMeleeAttacks()
     self.nextThrow = CurTime()+self.MeleeAttackDuration
 end
 function ENT:CustomAttack(ene, eneVisible) 
-self.entEnemy = ene
-self.eneVisible = eneVisible
+    self.entEnemy = ene
+    self.eneVisible = eneVisible
 end
 function ENT:CustomOnIdleDialogue(ent, status, statusInfo)
 --print("DIALOGUE") 
@@ -817,7 +803,7 @@ end
 				    --print("!Tr3Hit", "tr3.HitTexture: ", tr3.HitTexture,"tr3.Contents: ", tr3.Contents, "tr3.HitWorld: ", tr3.HitWorld, "tr3.StartSolid: ", tr3.StartSolid)
 
 				    else 
-				    	self.KSCooldownDelay = CurTime() +self.NextRangeAttackTime
+				    	self.KSCooldownDelay = CurTime() +1
                         self.CanDoSummon = false
                         self:StopParticles()
                         self:ResetSummonTraceBools() -- reset bools for next think
@@ -1174,14 +1160,14 @@ end
 	end
 end
 	
-function ENT:InterruptBeam()		-- Called on flinch, no target or self.dead
+function ENT:KingpinRenaissanceInterruptBeam()		-- Called on flinch, no target or self.dead
 	-- BeamInterruptCode
 	if self.bInSchedule then
-		self:VJ_ACT_PLAYACTIVITY(ACT_SIGNAL_ADVANCE, true, 0.5, true) -- attack_beam_end
-		self:EnableShield()
 		if self.tblBeams then for _, beam in pairs(self.tblBeams) do beam:Remove() end; self.tblBeams = nil end
 		if self.tblSprites then for _, sprite in pairs(self.tblSprites) do sprite:Remove() end; self.tblSprites = nil end
 		self.bInSchedule = false
+		self:VJ_ACT_PLAYACTIVITY(ACT_SIGNAL_ADVANCE, true, 0.5, true) -- attack_beam_end
+		self:EnableShield()
 		if self.cspBeam then
 			self.cspBeam:Stop()
 			self.cspBeam = nil
@@ -1213,7 +1199,7 @@ end
 
 function ENT:SelectScheduleHandle(distToEne)
 if self.energy < 0 then
-    self:InterruptBeam()
+    self:KingpinRenaissanceInterruptBeam()
 end	
 	if IsValid(self.entEnemy) then
 	    if self:CanSee(self.entEnemy) then
@@ -1270,7 +1256,4 @@ end
 			end
         end
 	end
-end
-function ENT:CustomOnDoKilledEnemy(ent, attacker, inflictor) 
-
 end
