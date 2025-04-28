@@ -71,13 +71,9 @@ function ENT:CustomOnThink()
 	end
 end
 
-function ENT:Splash(data, physobj)
-	    self:DoDamageCode(data, physobj)
-end
-
 function ENT:CustomOnPhysicsCollide(data, phys) -- Return false to disable the base functions from running
 	if !data.HitEntity || self.bCollided then return true end
-	self:Splash(data, physobj)
+    self:DealDamage(data, phys)
 	local effectdata = EffectData()
 	effectdata:SetOrigin(self:GetPos())
 	util.Effect("impact_splat_poison", effectdata)

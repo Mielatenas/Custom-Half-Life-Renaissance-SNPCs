@@ -8,7 +8,6 @@ ENT.BloodColor = "Blue" -- The blood type, this will determine what it should us
 ENT.RangeAttackEntityToSpawn = "obj_icesphere_r" -- The entity that is spawned when range attacking
 ENT.FlameParticle = "icesphere_trail"
 ENT.Immune_AcidPoisonRadiation = false -- Makes the SNPC not get damage from Acid, poison, radiation
-
 ENT.MeleeAttackDistance = 44 -- How close does it have to be until it attacks?
 --ENT.TimeUntilMeleeAttackDamage = 1.2 -- This counted in seconds | This calculates the time until it hits something
 
@@ -31,21 +30,21 @@ ENT.NextMoveAfterFlinchTime = 1.2
 ENT.FlameSd = "npc/hlrr/fire1.wav"
 ENT.FootStepTimeWalk = 1.25 -- Next foot step sound when it is walking
 ENT.FootStepTimeRun = 0.4 -- Next foot step sound when it is running
-ENT.GeneralSoundPitch1 = 95
-ENT.GeneralSoundPitch2 = 120
-ENT.FootStepPitch = VJ_Set(false, false)
-ENT.BreathSoundPitch = VJ_Set(false, false)
+--ENT.MainSoundPitchStatic = false
+
+ENT.MainSoundPitch = VJ.SET(95, 130) -- Can be a number or VJ.SET
+ENT.FootstepSoundPitch = VJ.SET(95, 160)
+
+ENT.FootStepTimeWalk = 0.82 -- Next foot step sound when it is walking
 // DO NOT CHANGE THIS VAIRABLE
 ENT.FlameDmgRadius = 400
 ENT.FlameConeDmgDegree = 40
 
-function ENT:ShouldUseFlame() end //return GetEnemy:PercentageFrozen() < 90 end
+--function ENT:ShouldUseFlame() end //return GetEnemy:PercentageFrozen() < 90 end
 
-function ENT:ShouldUseSpit() end //return self.entEnemy:PercentageFrozen() < 90 end
+--function ENT:ShouldUseSpit() end //return self.entEnemy:PercentageFrozen() < 90 end
 
 function ENT:CustomAttackCheck_MeleeAttack()
- 
-
  return true
  end -- Not returning true will not let the melee attack code run!
 
@@ -64,7 +63,7 @@ function ENT:FlameAttack()
 	end
 end
 
-function ENT:CustomOnThink()
+function ENT:OnThink()
 	//self:UpdateLastEnemyPositions()
 	if self.bInSchedule and self.FlameOn then
 		local effect = EffectData()

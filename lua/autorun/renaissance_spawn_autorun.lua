@@ -10,6 +10,7 @@ include("autorun/sh_meta_custom_renaissance.lua")
 
 local spawnCategory = "HL Renaissance Custom"
 
+VJ.AddCategoryInfo(spawnCategory, {Icon = "icons/hlrc.png"})
 VJ.AddNPC("Bullsquid","npc_bullsquid_base_r",spawnCategory)
 VJ.AddNPC("Devilsquid","npc_devilsquid_r",spawnCategory)
 VJ.AddNPC("Frostsquid","npc_frostsquid_r",spawnCategory)

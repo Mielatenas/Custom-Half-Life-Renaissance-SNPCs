@@ -70,10 +70,6 @@ function ENT:CustomOnThink()
 	self:Remove()
 end
 
-function ENT:Splash()
-    self:DoDamageCode(data, physobj)
-end
-
 function ENT:CustomOnPhysicsCollide(data, phys)
 	local effectdata = EffectData()
 		effectdata:SetOrigin(self:GetPos())
@@ -97,7 +93,7 @@ function ENT:CustomOnPhysicsCollide(data, phys)
 			end
 		end
 	end
-	self:Splash()
+	self:DealDamage(data, phys)
 	self:Remove()
 	return true
 end

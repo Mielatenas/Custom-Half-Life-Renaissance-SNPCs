@@ -163,7 +163,7 @@ function ENT:CustomOnCollideWithoutRemove(data, physobj)
 	self.delayRemove = self.delayRemove -1
 	ParticleEffect("kingpin_object_charge_bits", data.HitPos, Angle(0,0,0), self)
 	self:EmitSound("npc/controller/electro4.wav", 75, 100)
-	self:DoDamageCode(data, phys)
+	self:DealDamage(data, phys)
 	self.RadiusDamage = self.RadiusDamage/1.2
 	//self:Remove()
 	return true

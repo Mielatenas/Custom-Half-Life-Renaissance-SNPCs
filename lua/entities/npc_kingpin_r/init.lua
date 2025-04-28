@@ -4,10 +4,10 @@ include('shared.lua')
 ENT.bFreezable = false
 ENT.Model = {"models/half-life/kingpin.mdl"} -- The game will pick a random model from the table when the SNPC is spawned | Add as many as you want
 
-ENT.StartHealth = 600
+ENT.StartHealth = 700
 ENT.HullType = HULL_LARGE //HULL_MEDIUM_TALL
 ENT.SightDistance = 12000 -- How far it can see | Remember to call "self:SetSightDistance(dist)" if you want to set a new value after initialize!
-//ENT.SightAngle = 180 -- The sight angle | Example: 180 would make the it see all around it | Measured in degrees and then converted to radians
+ENT.SightAngle = 200 -- The sight angle | Example: 180 would make the it see all around it | Measured in degrees and then converted to radians
 ENT.VJC_Data = {
     ThirdP_Offset = Vector(-15, 0, -45), -- The offset for the controller when the camera is in third person
     FirstP_Bone = "MDLDEC_Bone23", -- If left empty, the base will attempt to calculate a position for first person
@@ -21,11 +21,11 @@ ENT.CustomBlood_Decal = {"VJ_HLR_Blood_Yellow"} -- Decals to spawn when it's dam
 ENT.HasBloodPool = true -- Does it have a blood pool?
 ENT.Immune_Electricity = true -- Immune to electrical-type damages | Example: shock or laser
 ENT.Immune_Dissolve = true -- Immune to dissolving | Example: Combine Ball
-ENT.Immune_Physics = true -- Immune to physics impacts, won't take damage from props
+ENT.ForceDamageFromBosses = true -- Should it receive damage by bosses regardless of its immunities? | Bosses are attackers tagged with "VJ_ID_Boss"
 
 ENT.HasMeleeAttack = true
 ENT.AnimTbl_MeleeAttack = {"vjges_attack1","vjges_attack2"}
-ENT.MeleeAttackDistance = 60 -- How close does it have to be until it attacks?
+ENT.MeleeAttackDistance = 80 -- How close does it have to be until it attacks?
 ENT.NextMeleeAttackTime = 1 // lowering these values may break range attack code!
 //ENT.NextMeleeAttackTime = 1.1 -- How much time until it can use a melee attack?
 
@@ -33,20 +33,19 @@ ENT.MeleeAttackAngleRadius = 100 -- What is the attack angle radius? | 100 = In 
 ENT.MeleeAttackDamageDistance = 100 -- How far does the damage go?
 ENT.MeleeAttackDamageAngleRadius = 100 -- What is the damage angle radius? | 100 = In front of the SNPC | 180 = All around the SNPC
 ENT.MeleeAttackAnimationFaceEnemy = true -- Should it face the enemy while playing the melee attack animation?
-ENT.MeleeAttackAnimationDecreaseLengthAmount = 0.5 -- This will decrease the time until starts chasing again. Use it to fix animation pauses until it chases the enemy.
+--ENT.MeleeAttackAnimationDecreaseLengthAmount = 0.5 -- This will decrease the time until starts chasing again. Use it to fix animation pauses until it chases the enemy.
 //ENT.MeleeAttackDamageDistance = 200 -- How far does the damage go?
 ENT.HasMeleeAttackKnockBack = false -- If true, it will cause a knockback to its enemy
 
 ENT.HasRangeAttack = true -- Should the SNPC have a range attack?
-ENT.RangeAttackEntityToSpawn = "grenade_spit" -- The entity that is spawned when range attacking
-ENT.AnimTbl_RangeAttack = {nil} -- Range Attack Animations
+ENT.RangeAttackEntityToSpawn = "obj_kingpin_projectile_energy_r" -- The entity that is spawned when range attacking
+--ENT.AnimTbl_RangeAttack = false
 ENT.TimeUntilRangeAttackProjectileRelease = 0.7
-ENT.NextAnyAttackTime_Range = false -- How much time until it can use any attack again? | Counted in Seconds
-
+ENT.NextAnyAttackTime_Range = false -- How much time until it can do any attack again? | false = Base auto calculates the duration | number = Specific time | VJ.SET = Randomized between the 2 numbers
 ENT.RangeUseAttachmentForPos = false -- Should the projectile spawn on a attachment?
-ENT.RangeAttackPos_Up = 65
-ENT.RangeAttackPos_Forward = 65
-ENT.NextRangeAttackTime = 1 -- How much time until it can use a range attack?
+--ENT.RangeAttackPos_Up = 65
+--ENT.RangeAttackPos_Forward = 65
+ENT.NextRangeAttackTime = 0.4 -- How much time until it can use a range attack?
 //ENT.NextRangeAttackTime_DoRand = 6 -- False = Don't use random time | Number = Picks a random number between the regular timer and this timer
 
 ENT.ConstantlyFaceEnemy = false -- Should it face the enemy constantly?
@@ -57,40 +56,43 @@ ENT.NoChaseAfterCertainRange_FarDistance = "UseRangeDistance" -- How far until i
 ENT.NoChaseAfterCertainRange_CloseDistance = "UseRangeDistance" -- How near until it can chase again? | "UseRangeDistance" = Use the number provided by the range attack instead
 ENT.NoChaseAfterCertainRange_Type = "OnlyRange" -- "Regular" = Default behavior | "OnlyRange" = Only does it if it's able to range attack
 ENT.HasDeathAnimation = true -- Does it play an animation when it dies?
-ENT.AnimTbl_Death = {ACT_DIESIMPLE, ACT_DIEFORWARD, ACT_DIEBACKWARD, ACT_DIE_HEADSHOT} -- Death Animations
-ENT.DeathAnimationTime = false -- Time until the SNPC spawns its corpse and gets removed
+ENT.DeathDelayTime = 0.6 -- Time until it spawns the corpse, removes itself, etc.
+ENT.AnimTbl_Death = {"vjseq_diesimple", "vjseq_diebackward"} -- Death Animations
+ENT.DeathAnimationTime = 0.6 
 ENT.DeathAnimationChance = 1 -- Put 1 if you want it to play the animation all the time
 ENT.DeathAnimationDecreaseLengthAmount = 0 -- This will decrease the time until it turns into a corpse
 
-ENT.FlinchChance = 5 -- Chance of it flinching from 1 to x | 1 will make it always flinch
+ENT.FlinchChance = 4 -- Chance of flinching from 1 to x | 1 = Always flinch
 	-- To let the base automatically detect the animation duration, set this to false:
-ENT.NextMoveAfterFlinchTime = 1 -- How much time until it can move, attack, etc.
-ENT.NextFlinchTime = 6 -- How much time until it can flinch again?
-ENT.CanFlinch = 1 -- 0 = Don't flinch | 1 = Flinch at any damage | 2 = Flinch only from certain damages
-ENT.AnimTbl_Flinch = {ACT_SIGNAL_HALT} -- If it uses normal based animation, use this
-ENT.FlinchAnimationDecreaseLengthAmount = 0 -- This will decrease the time it can move, attack, etc. | Use it to fix animation pauses after it finished the flinch animation
-ENT.HitGroupFlinching_DefaultWhenNotHit = true -- If it uses hitgroup flinching, should it do the regular flinch if it doesn't hit any of the specified hitgroups?
+ENT.FlinchCooldown = 5
+ENT.CanFlinch = true
+ENT.AnimTbl_Flinch = ACT_SIGNAL_HALT 
 	-- ====== Sound File Paths ====== --
+ENT.HasExtraMeleeAttackSounds = true -- Can it play extra melee attack sound effects?
 -- Leave blank if you don't want any sounds to play
-ENT.SoundTbl_FootStep = {"vj_hlr/pl_step1.wav","vj_hlr/pl_step2.wav","vj_hlr/pl_step3.wav","vj_hlr/pl_step4.wav"}
 ENT.SoundTbl_Breath = {"npc/kingpin/kingpin_breath01.mp3","npc/kingpin/kingpin_breath02.mp3"}
-ENT.SoundTbl_FootStep = {"vj_hlr/hl1_npc/kingpin/kingpin_move.wav", "vj_hlr/hl1_npc/kingpin/kingpin_moveslow.wav"}
---ENT.SoundTbl_Idle = {"npc/kingpin/kingpin_mindlinkloop.wav"}
+ENT.SoundTbl_FootStep = {"vj_hlr/gsrc/npc/kingpin/kingpin_move.wav", "vj_hlr/gsrc/npc/kingpin/kingpin_moveslow.wav"}
 ENT.SoundTbl_IdleDialogue = {"npc/kingpin/kingpin_mindlinkloop.wav"}
 ENT.SoundTbl_Alert = {"npc/kingpin/kingpin_alert.mp3"}
 ENT.SoundTbl_OnReceiveOrder = {"npc/kingpin/kingpin_leechgrab.wav","npc/kingpin/kingpin_mindlinkbegin.mp3","npc/kingpin/kingpin_mindlinkinterruption.mp3"}
-
-ENT.SoundTbl_MeleeAttackMiss = {"vj_hlr/hl1_npc/zombie/claw_miss1.wav","vj_hlr/hl1_npc/zombie/claw_miss2.wav"}
-ENT.SoundTbl_Pain = {"npc/kingpin/kingpin_injured02.mp3","npc/kingpin/kingpin_injured02.mp3"}
+ENT.SoundTbl_MeleeAttack = {"npc/kingpin/kingpin_melee.wav","vj_hlr/gsrc/npc/zombie/claw_miss2.wav"}
+ENT.SoundTbl_MeleeAttackMiss = {"vj_hlr/gsrc/npc/zombie/claw_miss1.wav","vj_hlr/gsrc/npc/zombie/claw_miss2.wav"}
+ENT.SoundTbl_Pain = {"npc/kingpin/kingpin_injured02.mp3","npc/kingpin/kingpin_injured03.mp3"}
 ENT.SoundTbl_Death = {"npc/kingpin/kingpin_death02.mp3"}
+
 ENT.FootStepTimeRun = 2-- Next foot step sound when it is running
 ENT.FootStepTimeWalk = 2 -- Next foot step sound when it is walking
 ENT.DisableFootStepSoundTimer = false -- If set to true, it will disable the time system for the footstep sound code, allowing you to use other ways like model events
-ENT.NextSoundTime_Breath = VJ_Set(3, 5)
-ENT.NextSoundTime_Pain = VJ_Set(3, 5) 
+ENT.NextSoundTime_Breath = VJ.SET(3, 5)
+ENT.PainSoundChance = 2
 ENT.IdleDialogueDistance = 900
 
+ENT.MainSoundPitch = VJ.SET(80, 110) -- Can be a number or VJ.SET
+ENT.MeleeAttackSoundPitch = VJ.SET(75, 110)
+
 ---Custom.---
+ENT.BeamloopAnims = {ACT_SIGNAL3, ACT_RANGE_ATTACK2}
+ENT.PickBeamAnim = VJ.PICK(ENT.BeamloopAnims)
 ENT.BeamLoopSnd = "npc/kingpin/kingpin_leechpullloop.wav"
 ENT.BeamDmg = 4
 
@@ -98,15 +100,17 @@ ENT.BeamDmg = 4
 ENT.CanDoSummon = false
 ENT.KSCooldownDelay = 0
 ENT.thelast = nil
-ENT.RangeDistance = 5000 -- beam and energy orbs ignore this 
-ENT.DisableDefaultRangeAttackCode = true // the reason melee breaks range attack code
+ENT.RangeAttackMinDistance = 80 -- Min range attack distance
+ENT.RangeAttackMaxDistance = 5000 -- Max range attack distance
+ENT.RangeAttackAngleRadius = 120 -- What is the attack angle radius? | 100 = In front of it | 180 = All around it
+--ENT.RangeDistance = 5000 -- beam and energy orbs ignore this 
 //ENT.RangeToMeleeDistance = 1 -- How close does it have to be until it uses melee? // breaks the Rangeattackcode when number is reached !!!!!!!
-ENT.RangeToMeleeDistance = math.huge // breaks Rangeattackcode when number IS reached and melee code activates !!!!!!!
+--ENT.RangeToMeleeDistance = math.huge // breaks Rangeattackcode when number IS reached and melee code activates !!!!!!!
 
 //ENT.DisableMeleeAttackAnimation = true -- if true, it will disable the animation code
 //ENT.DisableDefaultMeleeAttackCode = false -- When set to true, it will completely disable the melee attack code
 
-function ENT:CustomOnInitialize()
+function ENT:Init()
 	//self:SetHullSizeNormal()
 	self:SetCollisionBounds(Vector(22, 22, 95), Vector(-22, -22, 0))
 
@@ -202,10 +206,17 @@ function ENT:SetShieldPower(nPower)
 	umsg.End()
 end
 
-function ENT:CustomOnFlinch_BeforeFlinch(dmginfo, hitgroup) -- Return false to disallow the flinch from playing
+function ENT:OnFlinch(dmginfo, hitgroup, status)
+	print("FLINCHHHH")
+	if status == "Execute" then
+		if hitgroup != 109 then
+			if hitgroup != 101 then
+	        self:PlayAnim(ACT_DIESIMPLE, true, 1, false,0,{AlwaysUseSequence=true,PlayBackRate=1.2,PlayBackRateCalculated=true}) end
+	    end
 	self:KingpinRenaissanceInterruptBeam()
 	--self:StopAttack()
 	self.nextPlayerThrow = CurTime() +math.Rand(8,12)
+    end
 end
 /*
 function ENT:StopAttack()
@@ -343,7 +354,7 @@ function ENT:CustomOnThink_AIEnabled()
 	if self.bWaitForThrow then
 		if !IsValid(self.entCurThrow) then
 			self:StopAttack()
-			self:SLVPlayActivity(ACT_SIGNAL_HALT, true)
+			self:PlayAnim(ACT_SIGNAL_HALT, true)
 			return true
 		end
 		if CurTime() >= self.throwDelay then
@@ -425,7 +436,7 @@ function ENT:CustomOnThink_AIEnabled()
 	end
 end
 */
-function ENT:CustomOnThink()
+function ENT:OnThink()
 	if self.Dead then return end
 	local GetaTarget = self.entEnemy -- vj base internal enemy ent
 	local curTime = CurTime()
@@ -433,25 +444,24 @@ function ENT:CustomOnThink()
 	if !IsValid(GetaTarget) then
 		GetaTarget = self:GetEnemy()-- is a quicker way to update enemy but gives nil sometimes
 	end
-	if GetaTarget then distToEne = self:VJ_GetNearestPointToEntityDistance(GetaTarget) end
+	if GetaTarget then distToEne = VJ.GetNearestDistance(self, GetaTarget) end
 	    if distToEne and IsValid(self.entEnemy) then 
-	        //print(self.energy)
+	        --print(self.nextThrow)
 	        self.energy = self.energy -1
 	        if distToEne >= self.MeleeAttackDistance then 
-	        //self.DisableDefaultMeleeAttackCode = true -- When set to true, it will completely disable the melee attack code
-	        self.HasMeleeAttack = false
-	        //self.HasRangeAttack = true
+	        --self.HasMeleeAttack = false
             self.HasRangeAttackSound = false
             end
             if distToEne <= self.MeleeAttackDistance and !self.bInSchedule then
             //self.DisableDefaultMeleeAttackCode = false
-            self.HasMeleeAttack = true
+            self.HasRangeAttack = true
             //self.HasRangeAttack = false
             //print(self.HasRangeAttack)
-                if curTime > self.nextThrow and self.KingPinCanDoNextAttack==true then
-                self:MultipleMeleeAttacks() end
+                --if curTime > self.nextThrow and self.KingPinCanDoNextAttack==true then
+                --self:ExecuteMeleeAttack()
+                --end
             end
-            if distToEne > self.RangeDistance then
+            if distToEne > self.RangeAttackMaxDistance then
              //print("self.HasSoundAttack")
     	    self.HasRangeAttackSound = true
             end
@@ -459,8 +469,8 @@ function ENT:CustomOnThink()
         --print(self.MindLinkLoopAnim)
         if !self.entEnemy and !self.bInSchedule then
         	--print(self.HasMeleeAttack)
-            self.AnimTbl_IdleStand = {ACT_IDLE} 
-            self.HasMeleeAttack = false
+            --self.AnimTbl_IdleStand = {ACT_IDLE} 
+            --self.HasMeleeAttack = false
         end
             //self.HasMeleeAttack = false
 	if self.bInSchedule && self.tblBeams then -- Have to fix why tracelines cut the beam direction and speed on high height cliffs 
@@ -599,17 +609,24 @@ function ENT:UpdatePhysicsEnts()
 	end
 end
 */
-function ENT:CustomOnAcceptInput(key, activator, caller, data)
+function ENT:OnInput(key, activator, caller, data)
+	print(key)
 	    if key == "event_mattack left" or key == "event_mattack right" then
 		self.MeleeAttackDamage = self.MeleeKingpinDamage1
-		self:MeleeAttackCode()
+        self:ExecuteMeleeAttack()
 	    elseif key == "event_mattack strike" then
 		self.MeleeAttackDamage = self.MeleeKingpinDamage2
-		self:MeleeAttackCode()
-	    elseif key == "rattack distance" then
-		//self:RangeAttackCode()
+		self:ExecuteMeleeAttack()
+	    elseif key == "rattack distance" or key == "event_rattack distance" then
+		self:ExecuteRangeAttack()
 	    end
-	if key == "event_rattack psychic_loop" then
+	if key == "event_rattack beamstart" or key == "event_rattack beamloop" then -- loop
+
+	end
+	if key == "event_rattack beamanim" then
+	   	self.AnimTbl_RangeAttack = self.PickBeamAnim -- ACT_RANGE_ATTACK2 --ACT_SIGNAL3, ACT_SIGNAL2 , vjseq_attack_beam_loop, vjseq_attack_beam_start2
+    end
+	if key == "event_rattack psychic_loop" then --"event_rattack beamanim" -- beamstart
     	-- TURNON MIND LINK 
     	self.MindLinkLoopAnim = true
     else
@@ -617,16 +634,15 @@ function ENT:CustomOnAcceptInput(key, activator, caller, data)
     	self.MindLinkLoopAnim = false
     end
 end
-function ENT:MultipleMeleeAttacks()
+function ENT:OnMeleeAttack(status, enemy)
+	--print(status)
 	if math.random(1, 2) == 1 then 
 		//else self.TimeUntilMeleeAttackDamage = 1.0 end
-		self:VJ_ACT_PLAYACTIVITY("vjges_attack1", false, self.MeleeAttackDuration, true, 0,{SequenceDuration=1.5, SequenceInterruptible=false,PlayBackRate=1,PlayBackRateCalculated=true})
-		--self.MeleeAttackDamage = self.MeleeKingpinDamage2
+		--self:VJ_ACT_PLAYACTIVITY("vjges_attack1", true, self.MeleeAttackDuration, true, 0,{SequenceDuration=1.5, SequenceInterruptible=false,PlayBackRate=1,PlayBackRateCalculated=true})
 		// case1
 	else
 		self.TimeUntilMeleeAttackDamage = 0.6 -- This counted in seconds | This calculates the time until it hits something
-		self:VJ_ACT_PLAYACTIVITY("vjges_attack2", false, self.MeleeAttackDuration, true, 0,{SequenceDuration=1.5, SequenceInterruptible=false})
-		--self.MeleeAttackDamage = self.MeleeKingpinDamage1
+		--self:VJ_ACT_PLAYACTIVITY("vjges_attack2", true, self.MeleeAttackDuration, true, 0,{SequenceDuration=1.5, SequenceInterruptible=false})
 		// case2
     end
     self.nextThrow = CurTime()+self.MeleeAttackDuration
@@ -637,10 +653,10 @@ function ENT:CustomAttack(ene, eneVisible)
 end
 function ENT:CustomOnIdleDialogue(ent, status, statusInfo)
 --print("DIALOGUE") 
-	self:VJ_ACT_PLAYACTIVITY("vjseq_psychic_start", true, 0.8, false, false)
+	self:PlayAnim("vjseq_psychic_start", true, 0.8, false, false)
 	timer.Simple(0.55, function()
 		if IsValid(self) then
-		self:VJ_ACT_PLAYACTIVITY(ACT_RANGE_ATTACK2, true, 4.8, false, false,{SequenceDuration=4.8,PlayBackRateCalculated=true})
+		self:PlayAnim(ACT_RANGE_ATTACK2, true, 4.8, false, false,{SequenceDuration=4.8,PlayBackRateCalculated=true})
     --self.AnimTbl_IdleStand = {ACT_RANGE_ATTACK2}
         end
     end)
@@ -650,9 +666,24 @@ function ENT:ResetSummonTraceBools()
     self.Tr2Hit=false 
     self.Tr3Hit=false
 end
-function ENT:MultipleRangeAttacks()
-	// CustomAttack
-if self.HasMeleeAttack == true then return end
+
+function ENT:TranslateActivity(act)
+    if act == ACT_IDLE then --if self.MovementType==VJ_MOVETYPE_STATIONARY then 
+        --act = ACT_SIGNAL1
+        if self.bInSchedule==true && self.tblBeams then -- make beamloop animation
+            act = self.PickBeamAnim
+        end
+        return act
+    end
+    if act == ACT_SIGNAL_HALT then
+    	--return ACT_DIESIMPLE
+    end
+    return baseclass.Get("npc_vj_creature_base").TranslateActivity(self, act)
+end
+
+function ENT:OnRangeAttack(status, enemy) --function ENT:MultipleRangeAttacks()	// CustomAttack
+	print("OnRangeAttack")
+--if self.HasMeleeAttack == true then return end
 if self.energy <= -100 then
     self.SpwPartEfc = "tor_shockwave_blue"
 else
@@ -668,9 +699,9 @@ end
     	if self.CanDoSummon == true and self.DoMultipleEnergyOrbs == false then
     		local hlrFloatHealth = GetConVar("hlrcustom_multihealth"):GetFloat()
     		--print("Custom_01")
-    		self.AnimTbl_RangeAttack = {ACT_SIGNAL_FORWARD}
-    		self:VJ_ACT_PLAYACTIVITY("vjseq_attack_summon", false, 0.1, true, false)
-	        self.KingPinNextRangeAttackTime = CurTime() + 1
+    		self.AnimTbl_RangeAttack = ACT_SIGNAL_FORWARD
+    		--self:PlayAnim("vjseq_attack_summon", true, 1, false, false)
+	        self.KingPinNextRangeAttackTime = CurTime() + 0.5
            -- --ParticleEffectA( "tor_projectile", self.LeftBpos,Angle(0,0,0), self) -- won't follow the bone
            	if !self.BoneFollowerOn then
           	    ParticleEffectAttach("tor_projectile_d", PATTACH_ABSORIGIN_FOLLOW, self.LEarBoneFollower, 0)
@@ -835,7 +866,7 @@ end
 					bullchicken.entEnemy = self.entEnemy
 					table.insert(self.tblSummonedAllies, bullchicken)
 					
-					bullchicken:EmitSound("vj_hlr/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
+					bullchicken:EmitSound("vj_hlr/gsrc/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
 					
 					ParticleEffect(self.SpwPartEfc, pos +Vector(0,0,40), Angle(0,0,0), ally)
 					ParticleEffect("tor_projectile_vanish", pos +Vector(0,0,40), Angle(0,0,0), ally)
@@ -854,7 +885,7 @@ end
 			frostsquid.entEnemy = self.entEnemy
 			table.insert(self.tblSummonedAllies, frostsquid)
 			
-			frostsquid:EmitSound("vj_hlr/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
+			frostsquid:EmitSound("vj_hlr/gsrc/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
 			
 			ParticleEffect(self.SpwPartEfc, pos +Vector(0,0,40), Angle(0,0,0), ally)
 			ParticleEffect("tor_projectile_vanish", pos +Vector(0,0,40), Angle(0,0,0), ally)
@@ -874,7 +905,7 @@ end
 			devilsquid.entEnemy = self.entEnemy
 			table.insert(self.tblSummonedAllies, devilsquid)
 			
-			devilsquid:EmitSound("vj_hlr/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
+			devilsquid:EmitSound("vj_hlr/gsrc/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
 			
 			ParticleEffect(self.SpwPartEfc, pos +Vector(0,0,40), Angle(0,0,0), ally)
 			ParticleEffect("tor_projectile_vanish", pos +Vector(0,0,40), Angle(0,0,0), ally)
@@ -894,7 +925,7 @@ end
 					poisonsquid.entEnemy = self.entEnemy
 					table.insert(self.tblSummonedAllies, poisonsquid)
 			
-					poisonsquid:EmitSound("vj_hlr/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
+					poisonsquid:EmitSound("vj_hlr/gsrc/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
 			
 					ParticleEffect(self.SpwPartEfc, pos +Vector(0,0,40), Angle(0,0,0), ally)
 					ParticleEffect("tor_projectile_vanish", pos +Vector(0,0,40), Angle(0,0,0), ally)
@@ -914,7 +945,7 @@ end
 					    toxicsquid.entEnemy = self.entEnemy
 					    table.insert(self.tblSummonedAllies, toxicsquid)
 			
-					toxicsquid:EmitSound("vj_hlr/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
+					toxicsquid:EmitSound("vj_hlr/gsrc/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
 			
 					ParticleEffect(self.SpwPartEfc, pos +Vector(0,0,40), Angle(0,0,0), ally)
 					ParticleEffect("tor_projectile_vanish", pos +Vector(0,0,40), Angle(0,0,0), ally)
@@ -934,7 +965,7 @@ end
 					hybridsquid.entEnemy = self.entEnemy
 					table.insert(self.tblSummonedAllies, hybridsquid)
 			
-					hybridsquid:EmitSound("vj_hlr/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
+					hybridsquid:EmitSound("vj_hlr/gsrc/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
 			
 					ParticleEffect(self.SpwPartEfc, pos +Vector(0,0,40), Angle(0,0,0), ally)
 					ParticleEffect("tor_projectile_vanish", pos +Vector(0,0,40), Angle(0,0,0), ally)
@@ -959,7 +990,7 @@ end
 						houndeye.entEnemy = self.entEnemy
 						table.insert(self.tblSummonedAllies, houndeye)
 			
-						houndeye:EmitSound("vj_hlr/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
+						houndeye:EmitSound("vj_hlr/gsrc/fx/beamstart" .. math.random(1,2) .. ".wav",85,100)
 			
 						ParticleEffect(self.SpwPartEfc, pos +Vector(0,0,40), Angle(0,0,0), ally)
 						ParticleEffect("tor_projectile_vanish", pos +Vector(0,0,40), Angle(0,0,0), ally)
@@ -969,9 +1000,9 @@ end
             end end) 
         self.KingPinCanDoNextAttack = true
 		elseif self.DoMultipleEnergyOrbs == true then
-			//self.AnimTbl_RangeAttack = {ACT_RANGE_ATTACK1} -- Range Attack Animations
-			self:VJ_ACT_PLAYACTIVITY("vjges_distanceattack", false, 1)
-			self.KingPinNextRangeAttackTime = CurTime() + 1
+			self.AnimTbl_RangeAttack = ACT_RANGE_ATTACK1 -- Range Attack Animations
+			--self:PlayAnim("vjges_distanceattack", true, 1)
+			self.KingPinNextRangeAttackTime = CurTime() + 0.5
 			local OrbT = 0.2
 			local entscale = 8
 		    for i = 1, 3 do
@@ -1013,32 +1044,24 @@ end
 		    OrbT = OrbT +0.2
 		    end
 		    //self.PO = false
-
-		//elseif AttackType == 3 then
-			// print("Custom_03")
-			//self.KingPinCanDoNextAttack = false
-			//self.KingPinNextRangeAttackTime = CurTime() + 4
         end
-	    if IsValid(self.entEnemy) and self:Visible(self.entEnemy) and /*(self.thelast!=17) and*/ self.CanDoSummon==false and self.DoMultipleEnergyOrbs == false then
+	    if IsValid(self.entEnemy) and self:Visible(self.entEnemy) and self.CanDoSummon==false and self.DoMultipleEnergyOrbs == false then
 	    	--print("Custom_03")
 		// beamstart
-			//self.DoMultipleEnergyOrbs = false
+			self.AnimTbl_RangeAttack = ACT_SIGNAL1
 		    self.IsGuard = true
 		    self.MovementType = VJ_MOVETYPE_STATIONARY
-		    self:VJ_ACT_PLAYACTIVITY(ACT_SIGNAL1, true, 1.5, true, 0,{PlayBackRateCalculated=false}) -- attack_beam_start1, playbackrate can't be changed here otherwise changes all animations playbackrate though it can be set to normal on think with self.AnimationPlaybackRate
-		    timer.Simple(1.5, function()
+		    --self:PlayAnim("vjseq_attack_beam_start1", true, 1.5, true, 0,{PlayBackRateCalculated=true}) -- ACT_SIGNAL1 attack_beam_start1, playbackrate can't be changed here otherwise changes all animations playbackrate though it can be set to normal on think with self.AnimationPlaybackRate
+		    timer.Simple(1.4, function()
 		    if IsValid(self) and (IsValid(self.entEnemy) && CurTime() >= self.KingPinNextRangeAttackTime && self.KingPinCanDoNextAttack == true) and self.DoMultipleEnergyOrbs==false then
-		    self:VJ_ACT_PLAYACTIVITY(ACT_SIGNAL_ADVANCE, false, 4, true)
+		    --self:PlayAnim(ACT_SIGNAL_ADVANCE, false, 1, true) -- ACT_SIGNAL_ADVANCE
 		    self.bInSchedule = true
 		    self.KingPinNextRangeAttackTime = CurTime() + 15
-		    self.AnimTbl_IdleStand = {ACT_SIGNAL3}
 		    local hlrMultidmg = GetConVar("hlrcustom_multidmg"):GetFloat()
 	        self.BeamDmg = self.BeamDmg*hlrMultidmg
 		    //self.NextAnyAttackTime_Range = 2 -- How much time until it can use any attack again? | Counted in Seconds
 		    //self.NextRangeAttackTime = 10 
 		    //self.HasRangeAttack = false -- Should the SNPC have a range attack?
-
-		    self.AnimTbl_RangeAttack = {ACT_SIGNAL3} -- Range Attack Animations
 			local pos = self:GetPos()
 			//if (!self.posEnemyLast && !IsValid(self.entEnemy) ) then return end
             local normal = ((self.posEnemyLast || self.entEnemy:GetPos()) -pos):GetNormalized()
@@ -1133,12 +1156,10 @@ end
 		end
 	else
 		// beamstop
-			if !IsValid(self.entEnemy) /*or self.energy <= 0*/ or self.entEnemy:Health() <= 0 || !self:Visible(self.entEnemy) || self:GetPathDistanceToGoal() > self.RangeDistance then
-			 	--print("Custom_Stop")
+		/*	if !IsValid(self.entEnemy) or self.entEnemy:Health() <= 0 || !self:Visible(self.entEnemy) || self:GetPathDistanceToGoal() > self.RangeAttackMaxDistance then
+			 	print("Custom_Stop")
 				self:EnableShield()
-				//self:VJ_ACT_PLAYACTIVITY("vjges_attack_beam_end", false, 1, true)
 		        if self.tblBeams != nil then
-
 				    for _, beam in pairs(self.tblBeams) do beam:Remove() end
 				    for _, sprite in pairs(self.tblSprites) do sprite:Remove() end 
                     self.tblSprites = nil
@@ -1153,20 +1174,27 @@ end
 				    self.BeamLoopSd = nil
 				    self.KingPinNextRangeAttackTime = CurTime() -1
 			    end
-            else
-				if self:ShieldActive() then self:DisableShield() end
-				//self:VJ_ACT_PLAYACTIVITY(ACT_SIGNAL3, true, 2, true)
-			return end
+            else*/
+		if self:ShieldActive() then self:DisableShield() end
 	end
 end
-	
+function ENT:OnRangeAttackExecute(status, enemy, projectile)
+    if status == "Init" then return true
+    end
+end
 function ENT:KingpinRenaissanceInterruptBeam()		-- Called on flinch, no target or self.dead
 	-- BeamInterruptCode
+	--print("KingpinRenaissanceInterruptBeam")
 	if self.bInSchedule then
 		if self.tblBeams then for _, beam in pairs(self.tblBeams) do beam:Remove() end; self.tblBeams = nil end
 		if self.tblSprites then for _, sprite in pairs(self.tblSprites) do sprite:Remove() end; self.tblSprites = nil end
 		self.bInSchedule = false
-		self:VJ_ACT_PLAYACTIVITY(ACT_SIGNAL_ADVANCE, true, 0.5, true) -- attack_beam_end
+		if VJ.IsCurrentAnim(self, "attack_beam_loop") then -- check for flinch anim before
+		    self:PlayAnim(ACT_SIGNAL_ADVANCE, true, 0.5, true)
+		end 
+		if VJ.IsCurrentAnim(self, "psychic_loop") then
+			self:PlayAnim(ACT_SIGNAL_HALT, true, 0.4, true) -- attack_beam_end 
+		end
 		self:EnableShield()
 		if self.cspBeam then
 			self.cspBeam:Stop()
@@ -1184,17 +1212,15 @@ function ENT:KingpinRenaissanceInterruptBeam()		-- Called on flinch, no target o
 			self.entTarget:Remove()
 			self.entTarget = nil
 		end
-	    self.AnimTbl_RangeAttack = {nil}
 	    self.IsGuard = false
 	    self.MovementType = VJ_MOVETYPE_GROUND -- How does the SNPC move?
+	    self.PickBeamAnim = VJ.PICK(self.BeamloopAnims)
         self.KingPinNextRangeAttackTime = CurTime() -1
         self.energy = self.AddEnergy
         self:PlaySoundSystem("OnReceiveOrder")
         self:StopParticles()
 	end
 	self.KingPinCanDoNextAttack = true
-	self.AnimTbl_IdleStand = {ACT_IDLE}
-	//if self.actReset then self:SetMovementActivity(self.actReset); self.actReset = nil end
 end
 
 function ENT:SelectScheduleHandle(distToEne)
@@ -1203,19 +1229,16 @@ if self.energy < 0 then
 end	
 	if IsValid(self.entEnemy) then
 	    if self:CanSee(self.entEnemy) then
-			local bRange = distToEne <= self.RangeDistance
+			local bRange = distToEne <= self.RangeAttackMaxDistance
 			local bPlayerThrow = CurTime() >= self.nextPlayerThrow && self.entEnemy:IsPlayer()
 			if bRange then
 				for _, ent in pairs(self.tblSummonedAllies) do if !IsValid(ent) then self.tblSummonedAllies[_] = nil end end
 				if table.Count(self.tblSummonedAllies) < 3 and CurTime() > self.KSCooldownDelay then
 					self.CanDoSummon = true
-					//self:VJ_ACT_PLAYACTIVITY("vgseq_attack_summon", false, 0.1, true, false)
 					return
 				else
 				// more than 2 allies
 					self.bHit = false
-					//self.bInSchedule = true
-					//return end
 				// can not do summon
 				    self.CanDoSummon = false
 				    if self.BoneFollowerOn==true then

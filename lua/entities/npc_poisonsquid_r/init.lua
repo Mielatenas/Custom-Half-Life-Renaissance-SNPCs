@@ -6,7 +6,7 @@ ENT.StartHealth = 120
 ENT.BloodColor = "Purple" -- The blood type, this will determine what it should use (decal, particle, etc.)
 ENT.RangeAttackEntityToSpawn = "obj_poisonsquid_spit_r" -- The entity that is spawned when range attacking
 ENT.FlameParticle = "poisonsquid_sphere_trail"
-ENT.FlameDamageType = DMG_POISON
+ENT.FlameDamageType = DMG_ACID
 
 ENT.MeleeAttackDistance = 74 -- How close does it have to be until it attacks?
 ENT.NextMeleeAttackTime = 0.7 --can't get it lower than the animation duration
@@ -29,16 +29,12 @@ ENT.FlameDmgRadius = 300
 ENT.FlameConeDmgDegree = 30
 ENT.fRangeDistanceFlame = 230
 //ENT.FlameSd = "npc/hlrr/fire1.wav"
-
-ENT.GeneralSoundPitch1 = 75
-ENT.GeneralSoundPitch2 = 110
+ENT.MainSoundPitch = VJ.SET(75, 110) -- Can be a number or VJ.SET
 ENT.FootStepTimeWalk = 0.8 -- Next foot step sound when it is walking
 ENT.FootStepTimeRun = 0.2 -- Next foot step sound when it is running
-ENT.FootStepPitch = VJ_Set(false, false)
-ENT.BreathSoundPitch = VJ_Set(false, false)
 
-ENT.bIgnitable = false
-ENT.bFreezable = false
+--ENT.bIgnitable = false
+--ENT.bFreezable = false
 ----DO NOT CHANGE BELOW!----
 ENT.CanUseFlame = true
 ENT.IsPoisonBs = true

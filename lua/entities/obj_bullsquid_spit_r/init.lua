@@ -142,15 +142,15 @@ function ENT:CustomOnThink()
 		   --self.phys:ApplyTorqueCenter( Vector(4.5,14,41) )
            -- self.phys:SetPos(RightBpos, false) --false to teleport
         end 
-        --print("COMON BLUE")
+        /*--print("COMON BLUE")
         util.AddNetworkString( "UpdateToxBomb_CustomHLR" )
         net.Start("UpdateToxBomb_CustomHLR")
         net.WriteEntity(self.entHit) 
         net.WriteVector(RightBpos)
         net.WriteUInt(self.closestBoneIndex,8)
         net.Broadcast()
+        */
         if !self.UpdateToxBomb_CustomHLR then
-
             self.UpdateToxBomb_CustomHLR = true
         end
     end

@@ -14,7 +14,7 @@ ENT.NextMeleeAttackTime = 0.35 --can't get it lower than the animation duration
 ENT.NextMeleeAttackTime_DoRand = 0.75
 ENT.TimeUntilMeleeAttackDamage = false
 
-ENT.NoChaseAfterCertainRange_FarDistance = 200 -- How far until it can chase again? | "UseRangeDistance" = Use the number provided by the range attack instead
+ENT.LimitChaseDistance_Max = 200 -- How far until it can chase again? | "UseRangeDistance" = Use the number provided by the range attack instead
 //ENT.NextRangeAttackTime = 0.1 -- How much time until it can use a range attack?
 ENT.NextAnyAttackTime_Range = 0.3 -- How much time until it can use any attack again? | Counted in Seconds
 ENT.NextAnyAttackTime_Range_DoRand = -0.7 -- False = Don't use random time | Number = Picks a random number between the regular timer and this timer
@@ -28,14 +28,11 @@ ENT.BloodPoolSize = "Small" -- What's the size of the blood pool? | Sizes: "Norm
 --ENT.FlameDmgRadius = 300
 --ENT.FlameConeDmgDegree = 30
 --ENT.fRangeDistanceFlame = 230
-//ENT.FlameSd = "npc/hlrr/fire1.wav"
+//ENT.FlameSd = "npc/hlrr/fire1.wav"110
+ENT.MainSoundPitch = VJ.SET(75, 110) -- Can be a number or VJ.SET
 
-ENT.GeneralSoundPitch1 = 75
-ENT.GeneralSoundPitch2 = 110
 ENT.FootStepTimeWalk = 0.8 -- Next foot step sound when it is walking
 ENT.FootStepTimeRun = 0.3 -- Next foot step sound when it is running
-ENT.FootStepPitch = VJ_Set(false, false)
-ENT.BreathSoundPitch = VJ_Set(false, false)
 ENT.SpitReps = 6
 
 ---DO NOT CHANGE BELOW---

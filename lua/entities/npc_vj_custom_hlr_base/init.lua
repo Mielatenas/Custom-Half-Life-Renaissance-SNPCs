@@ -62,8 +62,10 @@ function util.CustomHlrBlastDmg(inflictor, attacker, pos, radius, dmg, TFilter, 
 			dmgInfo:SetDamageType(dmgType)
 			dmgInfo:SetDamagePosition(posDmg)
 			v:TakeDamageInfo(dmgInfo)
-			if (v:IsNPC() || v:IsPlayer()) && dmgType == DMG_ENERGYBEAM && v:Health() <= 0 then
-			    v:Dissolve(attacker, inflictor, 0)
+			if dmgType == DMG_ENERGYBEAM then
+			    if (v:IsNPC() || v:IsPlayer() or v:IsNextBot()) and v:Health() <= 0 then
+			    v:Dissolve(0, 0)
+			    end
 			end
 		end
 	end

@@ -595,7 +595,7 @@ function meta:FadeIn(fDelay) -- do not use!
 		if iAlpha == 255 then timer.Destroy("FadeInTimer" .. index); return end
 	end)
 end
-*/
+
 function meta:Dissolve(entAttacker, entInflictor, iType) -- going to be implemented but currently in gmod Dev Branch 2024.05.14
 	if self:IsPlayer() then
 		local dmgInfo = DamageInfo()
@@ -628,7 +628,7 @@ function meta:Dissolve(entAttacker, entInflictor, iType) -- going to be implemen
 		if IsValid(self) then self:SetName(_sName) end
 	end)
 end
-
+*/
 function meta:TurnDegree(iDeg, posAng, bPitch, iPitchMax)
 	if posAng then
 		local sType = type(posAng)

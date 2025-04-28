@@ -81,7 +81,7 @@ function ENT:CustomOnPhysicsCollide(data, phys)
 			if ent:GetClass() != "npc_turret_floor" then
 				if ent:WaterLevel() == 3 then return end
 				if ent:WaterLevel() == 0 then
-				self:DoDamageCode(data, physobj)
+				self:DealDamage(data, phys)
 			    end
 			/*	local dmg = DamageInfo()
 				local dmgvalue

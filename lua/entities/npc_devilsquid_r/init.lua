@@ -29,12 +29,6 @@ ENT.DamageScales = {
 
 ENT.FlinchChance = 10
 ENT.FlameSd = "npc/bullsquid/flame_run_lp.wav"
-ENT.GeneralSoundPitch1 = 60
-ENT.GeneralSoundPitch2 = 78
+ENT.MainSoundPitch = VJ.SET(60, 78) -- Can be a number or VJ.SET
 ENT.FootStepTimeWalk = 0.82 -- Next foot step sound when it is walking
-ENT.FootStepPitch = VJ_Set(false, false)
-ENT.BreathSoundPitch = VJ_Set(false, false)
-
-function ENT:CustomOnThink()
-
-end
+ENT.FootstepSoundPitch = VJ.SET(60, 78)

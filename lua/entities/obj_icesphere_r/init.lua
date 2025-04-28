@@ -102,8 +102,7 @@ function ENT:SetEntityOwner(ent) -- unused
 end
 */
 function ENT:Splash(data, physobj)
-    self:DoDamageCode(data, physobj)
-	//print(iSize)
+    self:DealDamage(data, phys)	//print(iSize)
 	self.bCollided = true
 		local effectdata = EffectData()
 	effectdata:SetOrigin(self:GetPos())
