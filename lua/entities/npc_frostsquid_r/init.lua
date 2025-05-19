@@ -8,7 +8,7 @@ ENT.BloodColor = "Blue" -- The blood type, this will determine what it should us
 ENT.RangeAttackEntityToSpawn = "obj_icesphere_r" -- The entity that is spawned when range attacking
 ENT.FlameParticle = "icesphere_trail"
 ENT.Immune_AcidPoisonRadiation = false -- Makes the SNPC not get damage from Acid, poison, radiation
-ENT.MeleeAttackDistance = 44 -- How close does it have to be until it attacks?
+--ENT.MeleeAttackDistance = 44 -- How close does it have to be until it attacks?
 --ENT.TimeUntilMeleeAttackDamage = 1.2 -- This counted in seconds | This calculates the time until it hits something
 
 //	"icesphere_splash","icesphere_trail",

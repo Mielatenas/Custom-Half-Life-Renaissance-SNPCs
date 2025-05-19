@@ -9,26 +9,26 @@ ENT.Model = {"models/half-life/bullsquid.mdl"} -- The game will pick a random mo
 ENT.StartHealth = 80
 ENT.HullType = HULL_WIDE_SHORT
 ENT.SightDistance = 8000 -- How far it can see | Remember to call "self:SetSightDistance(dist)" if you want to set a new value after initialize!
-ENT.SightAngle = 130 
+ENT.SightAngle = 180 
 
-ENT.VJC_Data = {
-    FirstP_Bone = "Bip01 Spine1", -- If left empty, the base will attempt to calculate a position for first person
-    FirstP_Offset = Vector(10, 0, 11.5), -- The offset for the controller when the camera is in first person
-	FirstP_ShrinkBone = false, -- Should the bone shrink? Useful if the bone is obscuring the player's view
+ENT.ControllerParams = {
+	ThirdP_Offset = Vector(0, 0, 0), -- The offset for the controller when the camera is in third person
+	FirstP_Bone = "Bip01 Neck",
+	FirstP_Offset = Vector(0, 0, 15),
+	FirstP_ShrinkBone = false,
 }
+-- use !self.VJ_IsBeingControlled, self.VJ_TheController:KeyDown(IN_ATTACK)
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ENT.VJ_NPC_Class = {"CLASS_XEN"} -- NPCs with the same class with be allied to each other
 ENT.BloodColor = "Yellow" -- The blood type, this will determine what it should use (decal, particle, etc.)
-ENT.CustomBlood_Particle = {"vj_hlr_blood_yellow"}
-ENT.CustomBlood_Decal = {"VJ_HLR_Blood_Yellow"} -- Decals to spawn when it's damaged
+ENT.BloodDecal = {"VJ_HLR1_Blood_Yellow"} -- Decals to spawn when it's damaged
 ENT.HasBloodPool = false -- Does it have a blood pool?
 ENT.Immune_AcidPoisonRadiation = true -- Makes the SNPC not get damage from Acid, poison, radiation
-ENT.AnimTbl_IdleStand = {ACT_IDLE, ACT_SQUID_DETECT_SCENT, ACT_TURN_LEFT} -- The idle animation table when AI is enabled | DEFAULT: {ACT_IDLE}
-ENT.ConstantlyFaceEnemy = true -- Should it face the enemy constantly?
-ENT.ConstantlyFaceEnemy_IfAttacking = true -- Should it face the enemy when attacking?
+--ENT.AnimTbl_IdleStand = {ACT_IDLE, ACT_SQUID_DETECT_SCENT, ACT_TURN_LEFT} -- The idle animation table when AI is enabled | DEFAULT: {ACT_IDLE}
 ENT.CanEat = true -- Can it search and eat organic stuff?
+ENT.EatCooldown = 45 -- How much time until it can eat again after devouring something?
+ENT.ForceDamageFromBosses = true
 
-ENT.HasMeleeAttack = true
 ENT.AnimTbl_MeleeAttack = {"vjseq_whip","vjseq_bite"} 
 ENT.MeleeAttackExtraTimers = nil -- Extra melee attack timers, EX: {1, 1.4} | it will run the damage code after the given amount of seconds
 ENT.TimeUntilMeleeAttackDamage = false
@@ -36,26 +36,29 @@ ENT.TimeUntilMeleeAttackDamage = false
 ENT.NextMeleeAttackTime = 0.8 -- How much time until it can use a melee attack?
 ENT.MeleeAttackAnimationFaceEnemy = false -- Should it face the enemy while playing the melee attack animation?
 ENT.MeleeAttackAnimationDecreaseLengthAmount = 0 -- This will decrease the time until starts chasing again. Use it to fix animation pauses until it chases the enemy.
-ENT.MeleeAttackDistance = 45 -- How close does it have to be until it attacks?
+ENT.MeleeAttackDistance = 55 -- How close does it have to be until it attacks?
 ENT.MeleeAttackDamage = 15
 ENT.MeleeAttackDamageDistance = 100 -- How far does the damage go?
 ENT.HasMeleeAttackKnockBack = true -- If true, it will cause a knockback to its enemy
 
-ENT.HasRangeAttack = true -- Should the SNPC have a range attack?
 ENT.AnimTbl_RangeAttack = {ACT_RANGE_ATTACK1} -- Range Attack Animations
 ENT.RangeAttackProjectiles = "obj_bullsquid_spit_r" -- The entity that is spawned when range attacking
-ENT.TimeUntilRangeAttackProjectileRelease = 0.55
+ENT.TimeUntilRangeAttackProjectileRelease = false
 
 ENT.NextRangeAttackTime = 1.0 -- How much time until it can use a range attack?
-ENT.RangeDistance = 4000 -- This is how far away it can shoot
+ENT.RangeAttackMinDistance = 45 -- Min range attack distance
+ENT.RangeAttackMaxDistance = 4000 -- Max range attack distance
 ENT.RangeUseAttachmentForPos = false -- Should the projectile spawn on a attachment?
-ENT.RangeAttackPos_Up = 25 -- Up/Down spawning position for range attack
-ENT.RangeAttackPos_Forward = 30 -- Forward/Backward spawning position for range attack
-ENT.RangeAttackPos_Right = 0 -- Right/Left spawning position for range attack
 
-ENT.LimitChaseDistance = true -- Should the SNPC not be able to chase when it's between number x and y?
-ENT.LimitChaseDistance_Max = 230 -- How far until it can chase again? | "UseRangeDistance" = Use the number provided by the range attack instead
-ENT.LimitChaseDistance_Min = 75 -- How near until it can chase again? | "UseRangeDistance" = Use the number provided by the range attack instead
+ENT.ConstantlyFaceEnemy = false -- Should it face the enemy constantly?
+ENT.ConstantlyFaceEnemy_IfVisible = false -- Should it only face the enemy if it's visible?
+ENT.ConstantlyFaceEnemy_IfAttacking = true -- Should it face the enemy when attacking?
+ENT.ConstantlyFaceEnemy_Postures = "Both" -- "Both" = Moving or standing | "Moving" = Only when moving | "Standing" = Only when standing
+ENT.ConstantlyFaceEnemy_MinDistance = 2500 -- How close does it have to be until it starts to face the enemy?
+
+ENT.LimitChaseDistance = "OnlyRange" -- Should it limit chasing when between certain distances? | true = Always limit | "OnlyRange" = Only limit if it's able to range attack
+ENT.LimitChaseDistance_Min = "UseRangeDistance" -- Min distance from the enemy to limit its chasing | "UseRangeDistance" = Use range attack's min distance
+ENT.LimitChaseDistance_Max = "UseRangeDistance" -- Max distance from the enemy to limit its chasing | "UseRangeDistance" = Use range attack's max distance
 ENT.HasDeathAnimation = true -- Does it play an animation when it dies?
 ENT.AnimTbl_Death = {ACT_DIESIMPLE, ACT_DIEFORWARD} -- Death Animations
 ENT.DeathAnimationTime = false -- Time until the SNPC spawns its corpse and gets removed
@@ -64,13 +67,11 @@ ENT.DeathAnimationDecreaseLengthAmount = 0 -- This will decrease the time until 
 
 ENT.CanFlinch = 1 -- 0 = Don't flinch | 1 = Flinch at any damage | 2 = Flinch only from certain damages
 ENT.FlinchDamageTypes = {DMG_BLAST} -- If it uses damage-based flinching, which types of damages should it flinch from?
-ENT.FlinchChance = 4 -- Chance of it flinching from 1 to x | 1 will make it always flinch
-	-- To let the base automatically detect the animation duration, set this to false:
-ENT.NextFlinchTime = 6 -- How much time until it can flinch again?
+ENT.FlinchChance = 4 -- Chance of flinching from 1 to x | 1 = Always flinch
+ENT.FlinchCooldown = 5 -- How much time until it can flinch again? | false = Base auto calculates the duration
 ENT.AnimTbl_Flinch = {ACT_SMALL_FLINCH, ACT_BIG_FLINCH} -- If it uses normal based animation, use this
-ENT.FlinchAnimationDecreaseLengthAmount = 0 -- This will decrease the time it can move, attack, etc. | Use it to fix animation pauses after it finished the flinch animation
-ENT.HitGroupFlinching_DefaultWhenNotHit = true -- If it uses hitgroup flinching, should it do the regular flinch if it doesn't hit any of the specified hitgroups?
-	-- ====== Sound File Paths ====== --
+ENT.FlinchHitGroupMap = false -- EXAMPLE: {{HitGroup = HITGROUP_HEAD, Animation = ACT_FLINCH_HEAD}, {HitGroup = HITGROUP_LEFTARM, Animation = ACT_FLINCH_LEFTARM}, {HitGroup = HITGROUP_RIGHTARM, Animation = ACT_FLINCH_RIGHTARM}, {HitGroup = HITGROUP_LEFTLEG, Animation = ACT_FLINCH_LEFTLEG}, {HitGroup = HITGROUP_RIGHTLEG, Animation = ACT_FLINCH_RIGHTLEG}}
+ENT.FlinchHitGroupPlayDefault = true -- Should it play "self.AnimTbl_Flinch" when none of the mapped hit groups hit?	-- ====== Sound File Paths ====== --
 -- Leave blank if you don't want any sounds to play
 ENT.SoundTbl_FootStep = {"vj_hlr/gsrc/pl_step1.wav","vj_hlr/gsrc/pl_step2.wav","vj_hlr/gsrc/pl_step3.wav","vj_hlr/gsrc/pl_step4.wav"}
 ENT.SoundTbl_Idle = {"vj_hlr/gsrc/npc/bullchicken/bc_idle1.wav","vj_hlr/gsrc/npc/bullchicken/bc_idle2.wav","vj_hlr/gsrc/npc/bullchicken/bc_idle2.wav","vj_hlr/gsrc/npc/bullchicken/bc_idle3.wav","vj_hlr/gsrc/npc/bullchicken/bc_idle4.wav","vj_hlr/gsrc/npc/bullchicken/bc_idle5.wav"}
@@ -93,25 +94,23 @@ ENT.SoundWater_Tbl = {"waterphysics/watermove1.ogg", "waterphysics/watermove3.og
 ---DO NOT CHANGE BELOW!---
 ENT.CanUseFlame = false
 ENT.FlameDuration = 0
-
 ENT.nextBlink = 0
 ENT.nextBsAttack = 0
-ENT.RangeToMeleeDistance = 1 -- breaks the Rangeattackcode when number is reached !!!!!!!
+ENT.HasMeleeAttack = true
+ENT.HasRangeAttack = true -- troublesome with NPC controller if set on and off in think!   
+ENT.TexecuteRangeSpit = 0.17
+--ENT.RangeToMeleeDistance = 1 -- breaks the Rangeattackcode when number is reached !!!!!!!
 ENT.NextMoveAfterFlinchTime = 1 -- if this is set lower than 1 sec breaks the whole range code for some reason-- after a time breaks when there's too much flinch? if they stay long distances they are fine. Prob have to update it when the new Vj Base Revamp is released.
 //ENT.SoundTbl_BeforeRangeAttack = {"npc/bullsquid/flame_run_lp.wav"}
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomOnInitialize()
+function ENT:Init()
+	if !self.IsHybrid then
+	self.BloodParticle = {"vj_hlr_blood_yellow"} end
 	self:SetCollisionBounds(Vector(20, 20 , 35), Vector(-20, -20, 0))
 	self.iSpitCount = 5
 	self.nextSpit = 0
 	self.nextBsSpitAttack = 0
-	self.Eating = false
-	self.nextSequence = 0
-	self.FoodType = 0
-	self.nextBloodEffect = 0
-	self.nextSound = 0
-	self.nextSoundIdle = 0
     local hlrMultidmg = GetConVar("hlrcustom_multidmg"):GetFloat()
 	self.FlameAttackDmg = self.FlameAttackDmg*hlrMultidmg
 	self.MeleeAttackDamage = self.MeleeAttackDamage*hlrMultidmg
@@ -119,7 +118,7 @@ function ENT:CustomOnInitialize()
     self.MultidmgBite = 15*hlrMultidmg
 	if self.FlameSd then
 	    self.loopsd = CreateSound(self,self.FlameSd)
-	    self.loopsd:SetSoundLevel(80)
+	    self.loopsd:SetSoundLevel(70)
 	end
 	--self:CapabilitiesRemove(bit.bor(CAP_ANIMATEDFACE)) -- does it fix anything??!!
 end
@@ -135,7 +134,6 @@ function ENT:OnInput(key, activator, caller, data) -- no key received on flinch,
 	    if key == "event_play AttackBite" or key == "event_mattack bite" then
 	    	self.SpecialEvAnim = true
 	    	self.MeleeAttackMissSoundLevel = 22
-
 	    else
 	    	self.SpecialEvAnim = false
 	    	self.MeleeAttackMissSoundLevel = 75
@@ -147,8 +145,8 @@ function ENT:OnInput(key, activator, caller, data) -- no key received on flinch,
 
 	end	
 	if key == "event_mattack whip" then -- or  key == "event_play AttackWhip"
-		/*	-------------------
-		if self.Immune_Fire then self.TimeUntilMeleeAttackDamage = 0.6 -- used to control TIMERS when VJ_ACT_PLAYACTIVITY was used, cannot change it if using events, vj melee timer set the timer even before 
+		/*	--------------------- used to control TIMERS when VJ_ACT_PLAYACTIVITY was used, cannot change it if using events, vj melee timer set the timer even before 
+		if self.Immune_Fire then self.TimeUntilMeleeAttackDamage = 0.6 
 		elseif (self.IsFrostBs == true or self.ToxicBull == true) then self.TimeUntilMeleeAttackDamage = 1.2
 		else self.TimeUntilMeleeAttackDamage = 1.0 
 		end */
@@ -178,11 +176,17 @@ function ENT:OnInput(key, activator, caller, data) -- no key received on flinch,
         self.SpecialEvAnim = false end
     end
 	--if key == "event_play AttackBite" or key == "event_mattack bite" then
-		    --self:MeleeAttackCode() -- will mess my code
+		    --self:MeleeAttackCode()
 	--end
 	if key == "event_play AttackRange" or key == "event_rattack spit" or key == "event_play AttackSpit" then
         self.CanUseSpit = true
-		--self:RangeAttackCode() -- will mess my code
+        if key == "event_rattack spit" and self.iSpitCount > 0 then
+       		timer.Simple(self.TexecuteRangeSpit, function() 
+	            if self.Dead or self.Flinching == true then return end
+		        if IsValid(self) and IsValid(self.BsValidCurEnemy) then self:ExecuteRangeAttack()
+		        end
+		    end) 	
+        end
 	else
 	    if !self.IsPoisonBs then
         self.CanUseSpit = false
@@ -192,9 +196,9 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function ENT:CustomOnThink_AIEnabled()
 	if CurTime() >= self.nextBlink then
-		self.nextBlink = CurTime() +math.Rand(2,8)
-		self:SetSkin(1)
 		local iDelay = 0.1
+		self.nextBlink = CurTime() +math.Rand(iDelay,5)
+		self:SetSkin(1)
 		for i = 1, 0, -1 do
 			timer.Simple(iDelay, function()
 				if IsValid(self) then
@@ -210,20 +214,76 @@ function ENT:CustomOnThink_AIEnabled()
 	if self:WaterLevel() <= 2 and (self.ToxicBull==true or self.IsPoisonBs==true or self.Immune_Fire==true or self.IsFrostBs==true) and !self.IsHybrid and self.CanUseFlame == false then
 	    self.CanUseFlame = true
 	end
-		if self.Eating == true then
-		print("Eating!d!!!!")
-
-		self:CustomOnEat()
-		if self:DetectEnemieswhileEating() then
-			self.Eating = false
-			self.nextSequence = 0
-			self.nextBloodEffect = 0
-			self.nextSound = 0
-			self.nextSoundIdle = 0
-			if self.EatingSound then VJ_STOPSOUND(self.EatingSound) end
-		end
+	local bValid = self.BsValidCurEnemy -- vj base internal enemy ent, the table self.EnemyData has if visible but prefered to not use it
+	if !IsValid(bValid) then
+		bValid = self:GetEnemy()-- is a quicker way to update enemy but gives nil sometimes
 	end
-	self:OnInterrupt()
+	--if IsValid(bValid) then
+    	--self.BsValidCurEnemy = bValid -- update enemy only if GetEnemy() got an enemy
+    --end
+	if bValid then dist = VJ.GetNearestDistance(self, bValid) end
+	if dist then
+		-- Ai control 
+		self.DistoEnemy = dist	
+		if self.iSpitCount <= 0 && CurTime() >= self.nextSpit then -- give back normal anim and timers
+		    self.iSpitCount = 6
+		    self.AnimTbl_RangeAttack = {ACT_RANGE_ATTACK1}
+		    self.NextRangeAttackTime = 1 
+		    self.NextAnyAttackTime_Range = false
+		end
+	    if self.bInSchedule==true and !self.VJ_IsBeingControlled then -- let player run without limits
+	        self.LimitChaseDistance="OnlyRange"
+	        self.HasRangeAttackSound = false
+	        --self.HasMeleeAttack = false
+	        --if self.iSpitCount > 0 and CurTime() >= self.nextBsSpitAttack then -- wrong use, have to fix 
+	            --self.HasRangeAttack = true
+	        --end
+	    end	
+	    if (self.bInSchedule==true and self.FlameOn == true) or self.CanUseSpit==false then --
+	    	--print(self.SpitReps)
+	    	--self.DisableDefaultRangeAttackCode = true 
+	    	--self.TimeUntilRangeAttackProjectileRelease = false
+	        elseif self.CanUseSpit==true then -- if is playing animation let spits go out
+	    	--self.DisableDefaultRangeAttackCode = false
+	    	--self.TimeUntilRangeAttackProjectileRelease = 0.55 
+	    end
+
+	    if self.iSpitCount > 0 and CurTime() >= self.nextBsSpitAttack then -- outside bInSchedule good
+	        --self.HasRangeAttack = true
+	        if self.IsPoisonBs and !self.SpecialEvAnim then
+                self.SpitReps = 5
+            end	
+        end
+	    if dist >= self.MeleeAttackDistance then 
+	        --self.HasMeleeAttack = false
+        else 
+            --self.HasMeleeAttack = true
+            --self.HasRangeAttack = false
+        end
+        if dist > self.fRangeDistanceFlame and CurTime() >= self.FlameDuration and !self.bInSchedule and self.CanUseSpit==true then
+    	self.HasRangeAttackSound = true -- turn on range attack sounds 
+        end
+    end
+    -- enter here if iSpitCount > 0, self.nextBsSpitAttack is here to let a chase period when iSpitCount is depleted 
+    if (self.FlameOn == true and CurTime() >= self.FlameDuration and CurTime() >= self.nextBsSpitAttack) then /*|| self.BsValidCurEnemy:GetPos().z -self:GetPos().z > 65 */ /* */
+    	--print("flame ON INTERRUPT")
+    	self.bInSchedule = false	
+	    self.FlameOn = false
+	    self.NextRangeAttackTime = 1
+		//if isnumber(self.NextAnyAttackTime_Range) then self.NextRangeAttackTime = 1 + (self.NextAnyAttackTime_Range) end
+		if self.IsPoisonBs then 
+		    --self.TimeUntilRangeAttackProjectileRelease = 0.55
+		else
+			if !self.IsHybrid then
+		    self.SpitReps = 5
+		    end
+		end
+		--self.DisableDefaultRangeAttackCode = false
+	    --self.TimeUntilRangeAttackProjectileRelease = 0.55 
+		self.AnimTbl_RangeAttack = {ACT_RANGE_ATTACK1}
+		self:StopParticles()
+		if self.FlameSd then self.loopsd:Stop() end 
+	end
 end
 function ENT:OnThinkAttack(isAttacking, enemy)
 
@@ -238,135 +298,80 @@ function ENT:CustomOnFootStepSound()
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 /*
-function ENT:StartEating(bloodtype)
-	self.Eating = true
-	self.nextSequence = 0
-	self.FoodType = bloodtype
-	self.nextBloodEffect = 0
-	self.nextSound = 0
-	self.nextSoundIdle = 0
-end
----------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:OnEat()
-	if self.nextSequence <= CurTime() then
-		self:PlayAnim(ACT_SQUID_EAT, false, false, false, false)
-		self.nextSequence = CurTime() + 2.63
-	end
-	if self.nextBloodEffect <= CurTime() then
-		if self.nextBloodEffect == 0 then
-			self.nextBloodEffect = CurTime() + math.random(0.4,2.0)
-		else
-			self.nextBloodEffect = CurTime() + math.random(0.4,2.0)
-			local posfood = self:GetPos() + self:GetForward()*20 + self:GetRight()*math.random(-10,10) + self:GetUp()*5
-			local Decal = nil
-			if self.FoodType == 1 then
-				ParticleEffect("blood_impact_yellow_01", posfood, Angle(0,0,0), self)
-				if math.random(1,3) == 2 then
-					Decal = "YellowBlood"
-				end
-			elseif self.FoodType == 2 then
-				ParticleEffect("blood_impact_green_01", posfood, Angle(0,0,0), self)
-				if math.random(1,3) == 2 then
-					Decal = "YellowBlood"
-				end
-			else
-				ParticleEffect("blood_impact_red_01", posfood, Angle(0,0,0), self)
-				if math.random(1,3) == 2 then
-					Decal = "Blood"
-				end
-			end
-			if Decal != nil then
-				local posCenter = self:GetPos() + self:GetForward()*20 + self:GetUp()*20
-				local posStart
-				local lottery = math.random(1,5)
-				if lottery == 1 then
-					posStart = posCenter + self:GetForward()*20
-				elseif lottery == 2 then
-					posStart = posCenter + self:GetRight()*35
-				elseif lottery == 3 then
-					posStart = posCenter + self:GetRight()*-35
-				elseif lottery == 4 then
-					posStart = posCenter + self:GetForward()*20 + self:GetRight()*20
-				else
-					posStart = posCenter + self:GetForward()*20 + self:GetRight()*-20
-				end
-				local posEnd = posStart + self:GetUp()*-50
-				local tr = util.TraceLine({start = posStart, endpos = posEnd, filter = self})
-				if tr.HitWorld || tr.Entity then
-					util.Decal(Decal,tr.HitPos +tr.HitNormal,tr.HitPos -tr.HitNormal)
-				end
-			end
-		end
-	end
-	if !self.EatingSound:IsPlaying() then
-		self.EatingSound:Play()
-	end
-	if self.nextSoundIdle <= CurTime() then
-		if self.nextSoundIdle == 0 then
-			self.nextSoundIdle = CurTime() + math.random(14,30)
-		else
-			self.nextSoundIdle = CurTime() + math.random(14,30)
-			self:EmitSound("npc/bullsquid/idle".. math.random(2,5) ..".wav", 100, 100)
-		end
-	end
-end
----------------------------------------------------------------------------------------------------------------------------------------------
-
-function ENT:DetectEnemieswhileEating()
-	local tblPotentialEnemies = {}
-	local bIgnorePlayers = tobool(GetConVarNumber("ai_ignoreplayers")) || self.bIgnorePlayers
-	if !bIgnorePlayers then table.Add(tblPotentialEnemies,player.GetAll()) end
-	table.Add(tblPotentialEnemies,ents.FindByClass("npc_*"))
-	table.Add(tblPotentialEnemies,ents.FindByClass("monster_*"))
-	table.Add(tblPotentialEnemies,ents.FindByClass("obj_sentrygun"))
-	for k, ent in pairs(tblPotentialEnemies) do
-		if (ent:IsNPC() || ent:IsPlayer()) && !ent:GetNoTarget() then
-			local fDist = self:GetPos():Distance(ent:GetPos())
-			local bValid = (ent:IsNPC() && ent != self && ent:Health() > 0) || (ent:IsPlayer() && ent:Alive())
-			if bValid then
-				if self:InSight(ent) then
-					if fDist <= 500 then
-						local iDisposition = self:Disposition(ent)
-						if self:Visible(ent) && (iDisposition == 1 || iDisposition == 2) && self:GetAIType() != 5 then
-							return true
-						end
-					end
-				else
-					if fDist  <= 100 then
-						local iDisposition = self:Disposition(ent)
-						if self:Visible(ent) && (iDisposition == 1 || iDisposition == 2) && self:GetAIType() != 5 then
-							return true
-						end
-					end
-				end
-			end
-		end
-	end
-	return false
+function ENT:TranslateActivity(act) -- 
+    if act == ACT_IDLE and self:GetState() == VJ_STATE_ONLY_ANIMATION_NOATTACK then -- if eatingData.AnimStatus== "Eating" then
+         --print("eatingData")
+        if self.IsPoisonBs or self.ToxicBull==true or self.IsHybrid then
+        	     	    print("Posion")
+            return ACT_COVER_LOW --ACT_SQUID_EAT --"eat"
+     	else
+     		if not VJ.IsCurrentAnim(self, "eat") then -- check to not repeat PlayAnim every tick 
+     	    if self.EatingData.AnimStatus == "Eating" then
+     	    print("ACT_SQUID_EAT")
+     	    self:PlayAnim("vjseq_eat", false, 2, false, 0)
+     	        --return ACT_SQUID_EAT --"eat" --ACT_SQUID_EAT
+     	    end end
+     	end
+        --return act
+    end
+    return baseclass.Get("npc_vj_creature_base").TranslateActivity(self, act)
 end
 */
-function ENT:CustomOnTakeDamage_AfterDamage(dmginfo, hitgroup)
-	if self.Eating == true then
-		self.Eating = false
-		self.nextSequence = 0
-		self.nextBloodEffect = 0
-		self.nextSound = 0
-		self.nextSoundIdle = 0
-		self.EatingSound:Stop()
-		if self:IsMoving() || self.bInSchedule || math.random(1,3) != 1 then return end
-		local dmgPos = dmginfo:GetDamagePosition()
-		local ang = self:CustomHLRenaissanceGetAngleToPos(dmgPos)
-		local bCanSee = ang.y > 90 && ang.y < 270
-		if bCanSee then
-			self:SetLastPosition(dmgPos)
-			local schdHop = ai_schedule.New("Surprised Hop")
-			schdHop:EngTask("TASK_STOP_MOVING", 0)
-			schdHop:EngTask("TASK_STOP_MOVING", 0)
-			schdHop:EngTask("TASK_PLAY_SEQUENCE", ACT_HOP)
-			schdHop:EngTask("TASK_FACE_LASTPOSITION")
-		//self:StartSchedule(schdHop)
+local vecZ50 = Vector(0, 0, -50)
+function ENT:OnEat(status, statusData)
+	--self.EatingData.NextCheck = curTime + 15 to add extra seconds to find next food
+	if status == "CheckFood" then
+		return true
+	elseif status == "BeginEating" then
+		if (self.IsPoisonBs or self.ToxicBull==true or self.IsHybrid) then
+			self.AnimationTranslations[ACT_IDLE] = ACT_COVER_LOW -- Eating animation
+		    return select(2, self:PlayAnim(ACT_COVER_LOW, true, false))
+		else
+			--self:PlayAnim("vjseq_inspectdown", true, 2)
+			self.AnimationTranslations[ACT_IDLE] = VJ.SequenceToActivity(self, "eat") --{ACT_IDLE, "vjges_eat"}
+			return select(2, self:PlayAnim("vjseq_eat", true, false))
 		end
-    end
+	elseif status == "Eat" then
+		--if (self.Immune_Fire==true or self.IsFrostBs or self.CanUseFlame==false) then
+		    --self.AnimationTranslations[ACT_IDLE] = VJ.SequenceToActivity(self, "eat")
+		    --self:PlayAnim("vjseq_eat", true, 1.5,false,0) end
+		--end
+		VJ.EmitSound(self, "npc/bullsquid/eat_munch" .. math.random(1, 2) .. ".ogg", 55)
+		-- Health changes
+		local food = self.EatingData.Target
+		local damage = 4 -- How much damage food will receive
+		local foodHP = food:Health() -- Food's health
+		local myHP = self:Health() -- NPC's current health
+		self:SetHealth(math.Clamp(myHP + ((damage > foodHP and foodHP) or damage), myHP, self:GetMaxHealth() < myHP and myHP or self:GetMaxHealth())) -- Give health to the NPC
+		food:SetHealth(foodHP - damage) -- Decrease corpse health
+		-- Blood effects
+		local bloodData = food.BloodData
+		if bloodData then
+			local bloodPos = food:GetPos() + food:OBBCenter()
+			local bloodParticle = VJ.PICK(bloodData.Particle)
+			if bloodParticle then
+				ParticleEffect(bloodParticle, bloodPos, self:GetAngles())
+			end
+			local bloodDecal = VJ.PICK(bloodData.Decal)
+			if bloodDecal then
+				local tr = util.TraceLine({start = bloodPos, endpos = bloodPos + vecZ50, filter = {food, self}})
+				util.Decal(bloodDecal, tr.HitPos + tr.HitNormal + Vector(math.random(-45, 45), math.random(-45, 45), 0), tr.HitPos - tr.HitNormal, food)
+			end
+		end
+		return 1 -- Eat every this seconds
+	elseif status == "StopEating" then
+		if statusData != "Dead" && self.EatingData.AnimStatus != "None" then -- Do NOT play anim while dead or has NOT prepared to eat
+			if statusData == "Injured" or statusData == "Enemy" then
+		        return select(2, self:PlayAnim(ACT_HOP, true, 0.5,false,0,{PlayBackRate=1}))
+	        else
+			    return select(2, self:PlayAnim(ACT_SIGNAL1, true, 1.5,false,0,{PlayBackRate=1}))
+		    end
+		end
+	end
+	return 0
+end
+function ENT:CustomOnTakeDamage_AfterDamage(dmginfo, hitgroup)
+
 end
 function ENT:CustomOnAlert(ent)
 	if math.random(1, 3) == 1 then
@@ -382,7 +387,7 @@ function ENT:RangeAttackProjVel(projectile)
 	-- Use curve if the projectile has physics, otherwise use a simple line
 	local phys = projectile:GetPhysicsObject()
 	if IsValid(phys) && phys:IsGravityEnabled() then
-		return VJ.CalculateTrajectory(self, self:GetEnemy(), "Curve", projectile:GetPos(), 1, 1) -- Increment it by distance
+		return VJ.CalculateTrajectory(self, self:GetEnemy(), "CurveAntlion", projectile:GetPos(), 1, self.DistoEnemy*1.1,{ApplyDist=false}) -- Increment it by distance
 	end
 	return VJ.CalculateTrajectory(self, self:GetEnemy(), "Line", projectile:GetPos(), 0.7, 1500)
 end
@@ -403,104 +408,32 @@ function ENT:MeleeAttackKnockbackVelocity(hitEnt)
 	return self:GetForward()*55 + self:GetUp()*255
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomOnMeleeAttack_BeforeStartTimer(seed)
-		//if self.CurrentAttackAnimationDuration >= 3 then
-//else if self.CurrentAttackAnimationDuration <= 2 then
-end
-function ENT:OnInterrupt()
-	local bValid = self.BsValidCurEnemy -- vj base internal enemy ent, the table self.EnemyData has if visible but prefered to not use it
-	if !IsValid(bValid) then
-		bValid = self:GetEnemy()-- is a quicker way to update enemy but gives nil sometimes
-	end
-	--if IsValid(bValid) then
-    	--self.BsValidCurEnemy = bValid -- update enemy only if GetEnemy() got an enemy
-    --end
-	if bValid then dist = VJ.GetNearestDistance(self, bValid) end
-	if dist then
-		self.DistoEnemy = dist	
-		if self.iSpitCount <= 0 && CurTime() >= self.nextSpit then
-		    self.iSpitCount = 6
-		end
-	    if self.bInSchedule==true then
-	        self.LimitChaseDistance=true
-	        self.HasRangeAttackSound = false
-	        self.HasMeleeAttack = false
-	        if self.iSpitCount > 0 and CurTime() >= self.nextBsSpitAttack then -- wrong use, have to fix 
-	            self.HasRangeAttack = true
-	        end
-	    end	
-	    if (self.bInSchedule==true and self.FlameOn == true) or self.CanUseSpit==false then -- animation got cut or didn't play
-	    	--print(self.SpitReps)
-	    	--self.DisableDefaultRangeAttackCode = true 
-	    	self.TimeUntilRangeAttackProjectileRelease = false
-	        elseif self.CanUseSpit==true then -- if is playing animation let spits go out
-	    	--self.DisableDefaultRangeAttackCode = false
-	    	self.TimeUntilRangeAttackProjectileRelease = 0.55 
-	    end
 
-	    if self.iSpitCount > 0 and CurTime() >= self.nextBsSpitAttack then -- outside bInSchedule good
-	        self.HasRangeAttack = true
-	        if self.IsPoisonBs and !self.SpecialEvAnim then
-                self.SpitReps = 5
-            end	
-        end
-	    if dist >= self.MeleeAttackDistance then 
-	        self.HasMeleeAttack = false
-        else 
-            self.HasMeleeAttack = true
-            self.HasRangeAttack = false
-        end
-        if dist >= self.RangeDistance then 
-            self.HasRangeAttack = false -- fix npc break when out of the range
-        end
-        if dist > self.fRangeDistanceFlame and CurTime() >= self.FlameDuration and !self.bInSchedule and self.CanUseSpit==true then
-    	self.HasRangeAttackSound = true -- turn on range attack sounds 
-        end
-    end
-    -- enter here if iSpitCount > 0, self.nextBsSpitAttack is here to let a chase period when iSpitCount is depleted 
-    if (self.FlameOn == true and CurTime() >= self.FlameDuration and CurTime() >= self.nextBsSpitAttack) then /*|| self.BsValidCurEnemy:GetPos().z -self:GetPos().z > 65 */ /* */
-    		print("flame ON INTERRUPT")
-    	self.bInSchedule = false	
-	    self.FlameOn = false
-	    self.NextRangeAttackTime = 1
-		//if isnumber(self.NextAnyAttackTime_Range) then self.NextRangeAttackTime = 1 + (self.NextAnyAttackTime_Range) end
-		if self.IsPoisonBs then 
-		    self.TimeUntilRangeAttackProjectileRelease = 0.55
-		else
-			if !self.IsHybrid then
-		    self.SpitReps = 1 -- since the update makes bad amends if poison only, each bs class seems ok but poison. can't move this from here
-		    end
-		end
-		--self.DisableDefaultRangeAttackCode = false
-	    self.TimeUntilRangeAttackProjectileRelease = 0.55 
-		self.AnimTbl_RangeAttack = {ACT_RANGE_ATTACK1}
-		self:StopParticles()
-		if self.FlameSd then self.loopsd:Stop() end 
-	end
-end
 function ENT:CustomAttack(ene, eneVisible) 
 self.BsValidCurEnemy = ene
 end
-function ENT:OnRangeAttack(status, enemy) --function ENT:MultipleRangeAttacks()--
--- function has all the validations
-	--print("MultipleRangeAttacks")
+function ENT:RangeAttackProjPos(projectile) --
+	if self.Immune_Fire==true then 
+    end
+	// return self:GetAttachment(self:LookupAttachment("muzzle")).Pos -- Attachment example
+	return self:GetPos() + self:GetUp() * 25 +self:GetForward()*35
+end
+function ENT:OnRangeAttack(status, enemy) -- old function ENT:MultipleRangeAttacks() hasn't all the validations
+	--print("OnRangeAttack")
 	if IsValid(self.BsValidCurEnemy) then
 	    local bValid = self:GetEnemy()
-        --local fDist -- unused
-		--fDist = self:OBBCenter(self.BsValidCurEnemy)
 		// when the Flame stops
 		if (self.FlameOn == false and CurTime() >= self.FlameDuration and CurTime() >= self.nextBsSpitAttack) or /*(self.DistoEnemy > self.fRangeDistanceFlame || self.DistoEnemy <= self.MeleeAttackDistance ||*/ (self.BsValidCurEnemy:Health() <= 0 or !self.BsValidCurEnemy) then /*|| self.BsValidCurEnemy:GetPos().z -self:GetPos().z > 65 */
-		    --print("check3")
+		   -- print("flame stop on range attack")
 			self.FlameOn = false
 			self.bInSchedule = false
 			--self.DisableDefaultRangeAttackCode = false
-			self.TimeUntilRangeAttackProjectileRelease = 0.55 
-			self.nextBsSpitAttack = CurTime() +0.4
+			--self.TimeUntilRangeAttackProjectileRelease = 0.55 
+			self.nextBsSpitAttack = CurTime()+0.4
 			if self.IsPoisonBs then 
 				self.NextRangeAttackTime = 1.0 
-			    self.TimeUntilRangeAttackProjectileRelease = 0.55 
+			    --self.TimeUntilRangeAttackProjectileRelease = 0.55 
 			    self.NextAnyAttackTime_Range = false
-                self.NextAnyAttackTime_Range_DoRand = false
             end
 			self.AnimTbl_RangeAttack = {ACT_RANGE_ATTACK1}
 			self:PlayAnim(ACT_SPECIAL_ATTACK2, true, 0.4, false)
@@ -510,7 +443,8 @@ function ENT:OnRangeAttack(status, enemy) --function ENT:MultipleRangeAttacks()-
 		end
 		    // Flame is on, Set an extra validation if enemy is visible, they do the flame even if the enemy is behind a wall--add traceline
 		if isnumber(self.DistoEnemy) and self.Flinching==false then 
-		    if self.CanUseFlame == true and !self.IsHybrid and self.DistoEnemy >= self.MeleeAttackDistance then /*and self.DistoEnemy < self.fRangeDistanceFlame and VJ_FindInCone(self:GetPos(), self:GetForward() or self.BsValidCurEnemy:GetForward(), 600, self.FlameConeDmgDegree or 90, {AllEntities=true})*/
+		    if self.CanUseFlame == true and !self.IsHybrid  then /*and self.DistoEnemy < self.fRangeDistanceFlame and VJ_FindInCone(self:GetPos(), self:GetForward() or self.BsValidCurEnemy:GetForward(), 600, self.FlameConeDmgDegree or 90, {AllEntities=true})*/
+	           --print("Flameeee check")
 	            local size = 60+ self.fRangeDistanceFlame
 	            local dir = self:GetForward()
 	            local angle = 0.780
@@ -522,18 +456,17 @@ function ENT:OnRangeAttack(status, enemy) --function ENT:MultipleRangeAttacks()-
 				local DispEne = self:Disposition(ent)
  				if (self:Visible(ent) or ent:OnGround()) and ent:IsValid() and (ent:IsNPC() or ent:IsNextBot() or ent:IsPlayer()) and DispEne <= 2 then 
                     --print("FLAMEEEE")
-                    self.DisableRangeAttackAnimation = false
                     --self.DisableDefaultRangeAttackCode = true
-                    self.TimeUntilRangeAttackProjectileRelease = false 
-		    		self.nextBsSpitAttack = CurTime() +1.2 -- issue?
+                    --self.TimeUntilRangeAttackProjectileRelease = false 
+		    		self.nextBsSpitAttack = CurTime() +0.5 -- issue?
 		        	if !self.IsPoisonBs then
 		    		    if self.SpecialEvAnim then
 		    		        --print("aooohohohoh")
 		    	    	    if !self.FlameOn then
 		    	    	    ParticleEffectAttach(self.FlameParticle, PATTACH_POINT_FOLLOW, self, 1)
-				    	    self.FlameOn = true
 				    	    --print("myparticle")
 				    	    end
+				    	    self.FlameOn = true
 				    	else
 				    	    if !self.FlameOn then 
 				    	    	self:PlayAnim("vjseq_flame_start", false, false, true)
@@ -541,22 +474,22 @@ function ENT:OnRangeAttack(status, enemy) --function ENT:MultipleRangeAttacks()-
 		    		        end
 				    	end
 		    		else --poison code!
-		    		self.TimeUntilRangeAttackProjectileRelease = 0.1
-		    		self.NextRangeAttackTime = VJ.SET(0.01, 0.4)
-		    		self.NextAnyAttackTime_Range = VJ.SET(0.01, 0.4)
+		    		--self.TimeUntilRangeAttackProjectileRelease = 0.1
+		    		--self.NextRangeAttackTime = VJ.SET(0.3, 1)
+		    		self.NextAnyAttackTime_Range = VJ.SET(0.3, 1)
                     self.FlameOn = true
 		    		self.AnimTbl_RangeAttack = {"vjseq_bite"} 
-		    		self:PlayAnim("vjseq_bite", true, 0.5, "Visible")
+		    		--self:PlayAnim("vjseq_bite", false, 1, "Visible",0,{PlayBackRate=1.5,PlayBackRateCalculated=false})
 		       		end
 		       	    --self.FlameOn = true
-		       	    self.NextRangeAttackTime = -1
+		       	    self.NextRangeAttackTime = 0.1
 		       	    self.bInSchedule = true
 		    	    self.HasRangeAttackSound = false
 		    	    if self.SpecialEvAnim then
                         if self.FlameSd then
                         self.loopsd:PlayEx(1,100)
                         	if self.ToxicBull ==true then
-	                         self.loopsd:ChangePitch( 65+(self.iSpitCount*2), 0 )
+	                         self.loopsd:ChangePitch( 55+(self.iSpitCount*2), 0 )
 	                        end
                        //self:PlaySoundSystem("BeforeRangeAttack")
                         end
@@ -566,12 +499,12 @@ function ENT:OnRangeAttack(status, enemy) --function ENT:MultipleRangeAttacks()-
 				        if self.FlameOn == true	then
 				        self:DoFlameDamage(ent) end
 				    end
+			    if not self.IsPoisonBs and self.DistoEnemy < self.fRangeDistanceFlame then return end -- don't let pass next except poison
 			    end
 		    end 
 		    end
-		--if (self.bInSchedule==true and self.FlameOn == true) or self.CanUseSpit==false then self.DisableDefaultRangeAttackCode = true end
-	    if self.TimeUntilRangeAttackProjectileRelease==false and !self.IsPoisonBs then return end
-
+	    --if self.TimeUntilRangeAttackProjectileRelease==false and !self.IsPoisonBs then return end
+		if self.bInSchedule==true and !self.IsPoisonBs then return end
 	    local eyePos = self.BsValidCurEnemy:EyePos() + self.BsValidCurEnemy:GetRight() * -5
 	    local eyeDir = self.BsValidCurEnemy:GetAimVector()
 	    local tr = util.TraceLine( {
@@ -579,20 +512,21 @@ function ENT:OnRangeAttack(status, enemy) --function ENT:MultipleRangeAttacks()-
 		endpos = eyePos + eyeDir * 10000,
 		filter = self.BsValidCurEnemy
 	    } )
-		local bRange = (self.DistoEnemy <= self.RangeDistance && self.DistoEnemy >= self.MeleeAttackDistance && self.iSpitCount > 0) //&& (!IsValid(tr.Entity)) || tr.HitPos == self)
+		local bRange = (self.DistoEnemy <= self.RangeAttackMaxDistance && self.DistoEnemy >= self.MeleeAttackDistance && self.iSpitCount > 0) //&& (!IsValid(tr.Entity)) || tr.HitPos == self)
 		if bRange then // Range Attack Code
+			--print("Spits Attack Code")
 		    if self.IsPoisonBs then 
 		    	-- print("POISON!")
 		    	if CurTime() > self.RT then -- fixes majority of vj base range attack timer breaks bc we turn on/off self.HasRangeAttack constantly and ENT.RangeToMeleeDistance is set to 1	 		
 		    	    self.RT = CurTime() +0.4
-		    	    timer.Simple(0.55, function()
+		    	    timer.Simple(0.4, function()
 		    	    	if self.Dead or self.Flinching == true then return end
 		                if IsValid(self) and IsValid(self.BsValidCurEnemy) then self:AttackSpit(self.BsValidCurEnemy)
 		                end
 		            end)
 		    	end
 		    else
-		    	if CurTime() > self.nextBsAttack then -- the rest DID need a timer fix
+		    	if CurTime() > self.nextBsAttack and CurTime() > self.FlameDuration then -- the rest DID need a timer fix
 		    	    self.nextBsAttack = CurTime() +self.NextRangeAttackTime
 	                timer.Simple(0.55, function() 
 	            	    if self.Dead or self.Flinching == true or self.AttackType == VJ_ATTACK_MELEE then return end
@@ -605,6 +539,10 @@ function ENT:OnRangeAttack(status, enemy) --function ENT:MultipleRangeAttacks()-
 	    end
 	    end
 	end
+end
+function ENT:OnRangeAttackExecute(status, enemy, projectile) 
+	--print(status)
+   -- if status == "Init" and self.DistoEnemy >= 1000 then print("NOPROJ") return true end
 end
 function ENT:DoFlameDamage(ent)
 	local dist = self.fRangeDistanceFlame
@@ -642,14 +580,14 @@ function ENT:DoFlameDamage(ent)
 		util.VJ_SphereDamage(self, self, dmgorigen, self.FlameDmgRadius, self.FlameAttackDmg, self.FlameDamageType, CheckIfPlayer, true, {Force=1, UpForce=0, DamageAttacker=self:IsPlayer(),UseConeDegree=self.FlameConeDmgDegree,UseConeDirection=self:GetForward()})
 end
 function ENT:AttackSpit(BsValidCurEnemy)
-    pos = self:GetProjectilePosition(BsValidCurEnemy)
-    local stpo = self:GetPos() + self:GetRight() * self.RangeAttackPos_Right + self:GetForward()*self.RangeAttackPos_Forward + self:GetUp()*self.RangeAttackPos_Up
+    pos = self:GetProjectilePosition(BsValidCurEnemy) 
+    local stpo = self:RangeAttackProjPos(projectile)
     local target1 = BsValidCurEnemy:GetPos() + BsValidCurEnemy:OBBCenter()
     	if self.IsPoisonBs and self.bInSchedule == true then
         self.SpitReps = 0
         stpo = stpo + self:GetForward()*15 + self:GetUp()*23
         elseif !self.bInSchedule and self.IsPoisonBs then 
-            stpo = stpo + self:GetForward()*10 + self:GetUp()*20
+            stpo = stpo
         end
 			for i = 0, self.SpitReps do
 				local Bullsphere = ents.Create(self.RangeAttackProjectiles)
@@ -672,10 +610,11 @@ function ENT:AttackSpit(BsValidCurEnemy)
 			end
 		self.iSpitCount = self.iSpitCount -1
 		if self.iSpitCount <= 0 then
-		//self.DisableRangeAttackAnimation = true -- won't deactivate the npc standby while trying to chase enemy, while trying to make them chase enemy when 0
-		self.HasRangeAttack = false
-		self.LimitChaseDistance = false -- chase enemy when no spits
-		//self.DisableDefaultRangeAttackCode = true
+			--print("iSpitCount 0")
+	        self.NextRangeAttackTime = 15
+		    --self.HasRangeAttack = false
+		    self.LimitChaseDistance = false -- chase enemy when no spits
+		    self.AnimTbl_RangeAttack = {nil} -- unconventional way to fix the last range attack anim when iSpitCount = 0
 			if !self.IsPoisonBs then
 			self.nextSpit = CurTime() +math.Rand(3,8)
 		    else
@@ -782,7 +721,7 @@ function ENT:SetUpGibesOnDeath(dmginfo, hitgroup)
     end
 	return true -- Return to true if it gibbed!
 end
-function ENT:CustomGibOnDeathSounds(dmginfo, hitgroup)
-	VJ_EmitSound(self, "vj_gib/default_gib_splat.wav", 90, 100)
-	return false
+function ENT:HandleGibOnDeath(dmginfo, hitgroup)
+	--VJ_EmitSound(self, "vj_base/gib/splat.wav", 90, 100)
+	--return false
 end

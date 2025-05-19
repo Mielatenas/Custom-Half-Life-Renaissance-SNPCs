@@ -1,33 +1,34 @@
 AddCSLuaFile( "shared.lua" )
 include('shared.lua')
 
-ENT.bFreezable = false
+--ENT.bFreezable = false
 ENT.Model = {"models/half-life/kingpin.mdl"} -- The game will pick a random model from the table when the SNPC is spawned | Add as many as you want
 
 ENT.StartHealth = 700
-ENT.HullType = HULL_LARGE //HULL_MEDIUM_TALL
+ENT.HullType = HULL_MEDIUM_TALL //HULL_MEDIUM_TALL HULL_LARGE
 ENT.SightDistance = 12000 -- How far it can see | Remember to call "self:SetSightDistance(dist)" if you want to set a new value after initialize!
 ENT.SightAngle = 200 -- The sight angle | Example: 180 would make the it see all around it | Measured in degrees and then converted to radians
-ENT.VJC_Data = {
-    ThirdP_Offset = Vector(-15, 0, -45), -- The offset for the controller when the camera is in third person
-    FirstP_Bone = "MDLDEC_Bone23", -- If left empty, the base will attempt to calculate a position for first person
-    FirstP_Offset = Vector(8, 0, 6), -- The offset for the controller when the camera is in first person
+
+ENT.ControllerParams = {
+	ThirdP_Offset = Vector(0, 0, 0), -- The offset for the controller when the camera is in third person
+	FirstP_Bone = "MDLDEC_Bone23",
+	FirstP_Offset = Vector(15, 0, 2),
+	FirstP_ShrinkBone = false,
 }
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ENT.VJ_NPC_Class = {"CLASS_XEN"} -- NPCs with the same class with be allied to each other
 ENT.BloodColor = "Yellow" -- The blood type, this will determine what it should use (decal, particle, etc.)
-ENT.CustomBlood_Particle = {"vj_hlr_blood_yellow"}
-ENT.CustomBlood_Decal = {"VJ_HLR_Blood_Yellow"} -- Decals to spawn when it's damaged
+ENT.BloodParticle = {"vj_hlr_blood_yellow"}
+ENT.BloodDecal = {"VJ_HLR1_Blood_Yellow"} -- Decals to spawn when it's damaged
 ENT.HasBloodPool = true -- Does it have a blood pool?
 ENT.Immune_Electricity = true -- Immune to electrical-type damages | Example: shock or laser
 ENT.Immune_Dissolve = true -- Immune to dissolving | Example: Combine Ball
 ENT.ForceDamageFromBosses = true -- Should it receive damage by bosses regardless of its immunities? | Bosses are attackers tagged with "VJ_ID_Boss"
 
 ENT.HasMeleeAttack = true
-ENT.AnimTbl_MeleeAttack = {"vjges_attack1","vjges_attack2"}
-ENT.MeleeAttackDistance = 80 -- How close does it have to be until it attacks?
-ENT.NextMeleeAttackTime = 1 // lowering these values may break range attack code!
-//ENT.NextMeleeAttackTime = 1.1 -- How much time until it can use a melee attack?
+ENT.AnimTbl_MeleeAttack = {ACT_MELEE_ATTACK1} -- "vjseq_attack1","vjseq_attack2"
+ENT.MeleeAttackDistance = 100 -- How close does it have to be until it attacks?
+ENT.NextMeleeAttackTime = 0.5
 
 ENT.MeleeAttackAngleRadius = 100 -- What is the attack angle radius? | 100 = In front of the SNPC | 180 = All around the SNPC
 ENT.MeleeAttackDamageDistance = 100 -- How far does the damage go?
@@ -36,25 +37,33 @@ ENT.MeleeAttackAnimationFaceEnemy = true -- Should it face the enemy while playi
 --ENT.MeleeAttackAnimationDecreaseLengthAmount = 0.5 -- This will decrease the time until starts chasing again. Use it to fix animation pauses until it chases the enemy.
 //ENT.MeleeAttackDamageDistance = 200 -- How far does the damage go?
 ENT.HasMeleeAttackKnockBack = false -- If true, it will cause a knockback to its enemy
+ENT.MeleeAttackDSP = 32 -- Should it apply a DSP effect to players? | false = Disable applying DSP effect | number = DSP effect ID
+ENT.MeleeAttackDSPLimit = 5 -- Should it only apply if the damage surpasses the given number? | false = Always apply | number = Only apply when damage is greater than or equal to this number
 
 ENT.HasRangeAttack = true -- Should the SNPC have a range attack?
 ENT.RangeAttackEntityToSpawn = "obj_kingpin_projectile_energy_r" -- The entity that is spawned when range attacking
---ENT.AnimTbl_RangeAttack = false
-ENT.TimeUntilRangeAttackProjectileRelease = 0.7
+--ENT.AnimTbl_RangeAttack = ACT_RANGE_ATTACK1 -- Range Attack Animations
 ENT.NextAnyAttackTime_Range = false -- How much time until it can do any attack again? | false = Base auto calculates the duration | number = Specific time | VJ.SET = Randomized between the 2 numbers
-ENT.RangeUseAttachmentForPos = false -- Should the projectile spawn on a attachment?
+--ENT.RangeUseAttachmentForPos = false -- Should the projectile spawn on a attachment?
 --ENT.RangeAttackPos_Up = 65
 --ENT.RangeAttackPos_Forward = 65
-ENT.NextRangeAttackTime = 0.4 -- How much time until it can use a range attack?
+ENT.NextRangeAttackTime = 0.9 -- How much time until it can use a range attack?
 //ENT.NextRangeAttackTime_DoRand = 6 -- False = Don't use random time | Number = Picks a random number between the regular timer and this timer
+
+ENT.CallForHelp = true -- Can it request allies for help while in combat?
+ENT.CallForHelpDistance = 2000 -- Max distance its request for help travels
+ENT.CallForHelpCooldown = 9 -- Time until it calls for help again
+ENT.AnimTbl_CallForHelp = ACT_RANGE_ATTACK2
+ENT.CallForHelpAnimFaceEnemy = false -- Should it face the enemy while playing the animation?
+ENT.CallForHelpAnimCooldown = 30 -- How much time until it can play an animation again?
 
 ENT.ConstantlyFaceEnemy = false -- Should it face the enemy constantly?
 --ENT.ConstantlyFaceEnemy_IfAttacking = true -- Should it face the enemy when attacking?
-
 ENT.NoChaseAfterCertainRange = false -- Should the SNPC not be able to chase when it's between number x and y?
 ENT.NoChaseAfterCertainRange_FarDistance = "UseRangeDistance" -- How far until it can chase again? | "UseRangeDistance" = Use the number provided by the range attack instead
 ENT.NoChaseAfterCertainRange_CloseDistance = "UseRangeDistance" -- How near until it can chase again? | "UseRangeDistance" = Use the number provided by the range attack instead
 ENT.NoChaseAfterCertainRange_Type = "OnlyRange" -- "Regular" = Default behavior | "OnlyRange" = Only does it if it's able to range attack
+
 ENT.HasDeathAnimation = true -- Does it play an animation when it dies?
 ENT.DeathDelayTime = 0.6 -- Time until it spawns the corpse, removes itself, etc.
 ENT.AnimTbl_Death = {"vjseq_diesimple", "vjseq_diebackward"} -- Death Animations
@@ -72,7 +81,7 @@ ENT.HasExtraMeleeAttackSounds = true -- Can it play extra melee attack sound eff
 -- Leave blank if you don't want any sounds to play
 ENT.SoundTbl_Breath = {"npc/kingpin/kingpin_breath01.mp3","npc/kingpin/kingpin_breath02.mp3"}
 ENT.SoundTbl_FootStep = {"vj_hlr/gsrc/npc/kingpin/kingpin_move.wav", "vj_hlr/gsrc/npc/kingpin/kingpin_moveslow.wav"}
-ENT.SoundTbl_IdleDialogue = {"npc/kingpin/kingpin_mindlinkloop.wav"}
+ENT.SoundTbl_IdleDialogue = {"npc/kingpin/kingpin_mindlinkloop.ogg"}
 ENT.SoundTbl_Alert = {"npc/kingpin/kingpin_alert.mp3"}
 ENT.SoundTbl_OnReceiveOrder = {"npc/kingpin/kingpin_leechgrab.wav","npc/kingpin/kingpin_mindlinkbegin.mp3","npc/kingpin/kingpin_mindlinkinterruption.mp3"}
 ENT.SoundTbl_MeleeAttack = {"npc/kingpin/kingpin_melee.wav","vj_hlr/gsrc/npc/zombie/claw_miss2.wav"}
@@ -86,6 +95,7 @@ ENT.DisableFootStepSoundTimer = false -- If set to true, it will disable the tim
 ENT.NextSoundTime_Breath = VJ.SET(3, 5)
 ENT.PainSoundChance = 2
 ENT.IdleDialogueDistance = 900
+ENT.IdleDialogueSoundLevel = 82
 
 ENT.MainSoundPitch = VJ.SET(80, 110) -- Can be a number or VJ.SET
 ENT.MeleeAttackSoundPitch = VJ.SET(75, 110)
@@ -100,27 +110,26 @@ ENT.BeamDmg = 4
 ENT.CanDoSummon = false
 ENT.KSCooldownDelay = 0
 ENT.thelast = nil
-ENT.RangeAttackMinDistance = 80 -- Min range attack distance
-ENT.RangeAttackMaxDistance = 5000 -- Max range attack distance
-ENT.RangeAttackAngleRadius = 120 -- What is the attack angle radius? | 100 = In front of it | 180 = All around it
---ENT.RangeDistance = 5000 -- beam and energy orbs ignore this 
+ENT.TimeUntilRangeAttackProjectileRelease = false -- Breaks Kingpin if number as is intended to be range event-based
+ENT.RangeAttackMinDistance = 20 -- Min range attack distance
+ENT.RangeAttackMaxDistance = 10000 -- -- beam and energy orbs ignore this
+ENT.RangeAttackAngleRadius = 100 -- What is the attack angle radius? | 100 = In front of it | 180 = All around it
 //ENT.RangeToMeleeDistance = 1 -- How close does it have to be until it uses melee? // breaks the Rangeattackcode when number is reached !!!!!!!
 --ENT.RangeToMeleeDistance = math.huge // breaks Rangeattackcode when number IS reached and melee code activates !!!!!!!
 
-//ENT.DisableMeleeAttackAnimation = true -- if true, it will disable the animation code
 //ENT.DisableDefaultMeleeAttackCode = false -- When set to true, it will completely disable the melee attack code
 
 function ENT:Init()
 	//self:SetHullSizeNormal()
 	self:SetCollisionBounds(Vector(22, 22, 95), Vector(-22, -22, 0))
 
-	self.nextPsychicAttack = 0
-	self.nextThrow = 0
-	self.throwDelay = 0
-	self.nextPlayerThrow = 0
-	self.nextPlayerHealthDrain = 0
-	self.entCurThrow = NULL
-	self.tblPhysEnts = {}
+	--self.nextPsychicAttack = 0
+	--self.nextThrow = 0
+	--self.throwDelay = 0
+	--self.nextPlayerThrow = 0
+	--self.nextPlayerHealthDrain = 0
+	--self.entCurThrow = NULL
+	--self.tblPhysEnts = {}
 	self.KingPinCanDoNextAttack = true
 	self.KingPinNextRangeAttackTime = 0
 	self.energy = 80
@@ -137,8 +146,8 @@ function ENT:Init()
 	shield:DrawShadow(false)
 	shield:Spawn()
 	--shield:Activate()
-	--self.bShieldActive = true
-	--self.entShield = shield
+	self.bShieldActive = true
+	self.entShield = shield
 	--self:SetShieldPower(100)
 	--self:ActivateShield()
 	--self:SetSoundLevel(95)
@@ -190,10 +199,6 @@ function ENT:EnableShield()
 	if IsValid(self.entShield) then self.entShield:SetNoDraw(false); self.bShieldActive = true end
 end
 
-function ENT:ShieldActive()
-	return self.bShieldActive
-end
-
 function ENT:SetShieldPower(nPower)
 	if !IsValid(self.entShield) then return end
 	self.shieldPower = math.Clamp(nPower, 0, 100)
@@ -205,17 +210,30 @@ function ENT:SetShieldPower(nPower)
 		umsg.Short(nPower)
 	umsg.End()
 end
+function ENT:OnDamaged(dmginfo, hitgroup, status)
+	if status == "Init" then
+	    dmg = dmginfo:GetDamage()
+	    if dmg > 40 then
+	        self.FlinchChance = 2
+            self.FlinchCooldown = 0.5
+        end
+    end
+end
 
 function ENT:OnFlinch(dmginfo, hitgroup, status)
-	print("FLINCHHHH")
+	--print("FLINCHHHH")
 	if status == "Execute" then
 		if hitgroup != 109 then
-			if hitgroup != 101 then
-	        self:PlayAnim(ACT_DIESIMPLE, true, 1, false,0,{AlwaysUseSequence=true,PlayBackRate=1.2,PlayBackRateCalculated=true}) end
+			if hitgroup != 101 then -- no other way to play diesimple, so I had to force it
+	        self:PlayAnim(ACT_DIESIMPLE, true, 1, false,0,{AlwaysUseSequence=true,PlayBackRate=1.4,PlayBackRateCalculated=true})
+            self.KingPinNextRangeAttackTime = CurTime() + 1
+	        end
 	    end
-	self:KingpinRenaissanceInterruptBeam()
+	    self:KingpinRenaissanceInterruptBeam(false)
+	    self.FlinchChance = 4
+        self.FlinchCooldown = 5
 	--self:StopAttack()
-	self.nextPlayerThrow = CurTime() +math.Rand(8,12)
+	--self.nextPlayerThrow = CurTime() +math.Rand(8,12)
     end
 end
 /*
@@ -235,7 +253,7 @@ function ENT:StopAttack()
 	end
 	self.bThrowPlayer = false
 end
-*/
+
 function ENT:ActivateShield()
 	//self:SetInvincible(true)
 	ParticleEffectAttach("kingpin_psychic_shield_idle", PATTACH_ABSORIGIN_FOLLOW, self, 0 )
@@ -245,11 +263,7 @@ function ENT:DeactivateShield()
 	//self:SetInvincible(false)
 	self:StopParticles()
 end
-
-function ENT:MindControl(ent)
-	
-end
-
+*/
 /*
 local velMax = {rpg_missile = 1500, obj_rpg = 1200, npc_grenade_frag = 1024, prop_combine_ball = 1000}
 function ENT:CustomOnThink_AIEnabled()
@@ -437,10 +451,11 @@ function ENT:CustomOnThink_AIEnabled()
 end
 */
 function ENT:OnThink()
+	--print(self.energy)
 	if self.Dead then return end
 	local GetaTarget = self.entEnemy -- vj base internal enemy ent
 	local curTime = CurTime()
-	--print(self.entEnemy)
+	--print(self.HasRangeAttack)
 	if !IsValid(GetaTarget) then
 		GetaTarget = self:GetEnemy()-- is a quicker way to update enemy but gives nil sometimes
 	end
@@ -450,11 +465,13 @@ function ENT:OnThink()
 	        self.energy = self.energy -1
 	        if distToEne >= self.MeleeAttackDistance then 
 	        --self.HasMeleeAttack = false
+	       -- self.HasRangeAttack = true
             self.HasRangeAttackSound = false
             end
             if distToEne <= self.MeleeAttackDistance and !self.bInSchedule then
             //self.DisableDefaultMeleeAttackCode = false
-            self.HasRangeAttack = true
+            --self.HasRangeAttack = false
+            --self.HasMeleeAttack = true
             //self.HasRangeAttack = false
             //print(self.HasRangeAttack)
                 --if curTime > self.nextThrow and self.KingPinCanDoNextAttack==true then
@@ -466,13 +483,10 @@ function ENT:OnThink()
     	    self.HasRangeAttackSound = true
             end
         end
-        --print(self.MindLinkLoopAnim)
-        if !self.entEnemy and !self.bInSchedule then
+        /*if !self.entEnemy and !self.bInSchedule then
         	--print(self.HasMeleeAttack)
-            --self.AnimTbl_IdleStand = {ACT_IDLE} 
             --self.HasMeleeAttack = false
-        end
-            //self.HasMeleeAttack = false
+        end*/
 	if self.bInSchedule && self.tblBeams then -- Have to fix why tracelines cut the beam direction and speed on high height cliffs 
 		if IsValid(self.entEnemy) then
 			GetaTarget = self.entEnemy
@@ -533,7 +547,7 @@ function ENT:OnThink()
 	    if (!IsValid(self.entEnemy) or !self.eneVisible) then -- interrupt beam if no enemy or no visible, to change if will update the beam traceline 
 	        timer.Simple(2, function()
 		    if IsValid(self) then
-		    self:KingpinRenaissanceInterruptBeam() 
+		    self:KingpinRenaissanceInterruptBeam(false) 
             end end)
 	    end
 	end
@@ -566,11 +580,11 @@ function ENT:StopAttackEffects()
 	if self.bThrowPlayer && IsValid(self.entEnemy) && self.entEnemy:IsPlayer() then
 		self.entEnemy:StopParticles()
 	end
-	if IsValid(self.entCurThrow) then self.entCurThrow:StopParticles() end
+	--if IsValid(self.entCurThrow) then self.entCurThrow:StopParticles() end
 end
 
 function ENT:CustomOnRemove()
-	self:KingpinRenaissanceInterruptBeam()
+	self:KingpinRenaissanceInterruptBeam(true)
 	--self:UpdatePhysicsEnts()
 	/*
 	for k, v in pairs(self.tblPhysEnts) do
@@ -610,15 +624,17 @@ function ENT:UpdatePhysicsEnts()
 end
 */
 function ENT:OnInput(key, activator, caller, data)
-	print(key)
+	--print(key)
 	    if key == "event_mattack left" or key == "event_mattack right" then
+        self.KingPinNextRangeAttackTime = CurTime() + 1
 		self.MeleeAttackDamage = self.MeleeKingpinDamage1
-        self:ExecuteMeleeAttack()
+        --self:ExecuteMeleeAttack()
 	    elseif key == "event_mattack strike" then
+        self.KingPinNextRangeAttackTime = CurTime() + 1
 		self.MeleeAttackDamage = self.MeleeKingpinDamage2
-		self:ExecuteMeleeAttack()
+		--self:ExecuteMeleeAttack()
 	    elseif key == "rattack distance" or key == "event_rattack distance" then
-		self:ExecuteRangeAttack()
+		--self:ExecuteRangeAttack()
 	    end
 	if key == "event_rattack beamstart" or key == "event_rattack beamloop" then -- loop
 
@@ -626,7 +642,7 @@ function ENT:OnInput(key, activator, caller, data)
 	if key == "event_rattack beamanim" then
 	   	self.AnimTbl_RangeAttack = self.PickBeamAnim -- ACT_RANGE_ATTACK2 --ACT_SIGNAL3, ACT_SIGNAL2 , vjseq_attack_beam_loop, vjseq_attack_beam_start2
     end
-	if key == "event_rattack psychic_loop" then --"event_rattack beamanim" -- beamstart
+	if key == "event_rattack psychic_loop" then
     	-- TURNON MIND LINK 
     	self.MindLinkLoopAnim = true
     else
@@ -636,27 +652,39 @@ function ENT:OnInput(key, activator, caller, data)
 end
 function ENT:OnMeleeAttack(status, enemy)
 	--print(status)
+	/*
 	if math.random(1, 2) == 1 then 
-		//else self.TimeUntilMeleeAttackDamage = 1.0 end
-		--self:VJ_ACT_PLAYACTIVITY("vjges_attack1", true, self.MeleeAttackDuration, true, 0,{SequenceDuration=1.5, SequenceInterruptible=false,PlayBackRate=1,PlayBackRateCalculated=true})
+		else self.TimeUntilMeleeAttackDamage = 1.0 end
+		self:VJ_ACT_PLAYACTIVITY("vjges_attack1", true, self.MeleeAttackDuration, true, 0,{SequenceDuration=1.5, SequenceInterruptible=false,PlayBackRate=1,PlayBackRateCalculated=true})
 		// case1
 	else
 		self.TimeUntilMeleeAttackDamage = 0.6 -- This counted in seconds | This calculates the time until it hits something
-		--self:VJ_ACT_PLAYACTIVITY("vjges_attack2", true, self.MeleeAttackDuration, true, 0,{SequenceDuration=1.5, SequenceInterruptible=false})
+		self:VJ_ACT_PLAYACTIVITY("vjges_attack2", true, self.MeleeAttackDuration, true, 0,{SequenceDuration=1.5, SequenceInterruptible=false})
 		// case2
-    end
-    self.nextThrow = CurTime()+self.MeleeAttackDuration
+    end*/
+    --self.nextThrow = CurTime()+self.MeleeAttackDuration
 end
+function ENT:OnMeleeAttackExecute(status, ent, isProp)
+	--print(status)
+end
+
 function ENT:CustomAttack(ene, eneVisible) 
     self.entEnemy = ene
     self.eneVisible = eneVisible
 end
-function ENT:CustomOnIdleDialogue(ent, status, statusInfo)
+
+function ENT:OnIdleDialogue(ent, status, statusData)
 --print("DIALOGUE") 
 	self:PlayAnim("vjseq_psychic_start", true, 0.8, false, false)
 	timer.Simple(0.55, function()
 		if IsValid(self) then
-		self:PlayAnim(ACT_RANGE_ATTACK2, true, 4.8, false, false,{SequenceDuration=4.8,PlayBackRateCalculated=true})
+		self:PlayAnim(ACT_RANGE_ATTACK2, true, 4.8, false, false,{OnFinish=function(interrupted, anim)
+			self.energy = 150
+			if self.bShieldActive==true then
+			    self:DisableShield()
+			else
+                self:EnableShield()
+			end end, SequenceDuration=4.8,PlayBackRateCalculated=true})
     --self.AnimTbl_IdleStand = {ACT_RANGE_ATTACK2}
         end
     end)
@@ -675,15 +703,12 @@ function ENT:TranslateActivity(act)
         end
         return act
     end
-    if act == ACT_SIGNAL_HALT then
-    	--return ACT_DIESIMPLE
-    end
     return baseclass.Get("npc_vj_creature_base").TranslateActivity(self, act)
 end
 
 function ENT:OnRangeAttack(status, enemy) --function ENT:MultipleRangeAttacks()	// CustomAttack
-	print("OnRangeAttack")
---if self.HasMeleeAttack == true then return end
+	--print("OnRangeAttack")
+--if self.HasMeleeAttack == true then return end -- safa check to not let melee break AI!
 if self.energy <= -100 then
     self.SpwPartEfc = "tor_shockwave_blue"
 else
@@ -694,14 +719,15 @@ end
     	self.DoMultipleEnergyOrbs = true
     else
         self.DoMultipleEnergyOrbs = false end
-    if (IsValid(self.entEnemy) && CurTime() >= self.KingPinNextRangeAttackTime && self.KingPinCanDoNextAttack == true) then /*!self:IsBusy()*/
+    if (IsValid(self.entEnemy) && CurTime() >= self.KingPinNextRangeAttackTime && self.KingPinCanDoNextAttack == true) or (self.VJ_IsBeingControlled && self.VJ_TheController:KeyDown(IN_ATTACK)) then /*!self:IsBusy()*/
     	self.KingPinCanDoNextAttack = false
-    	if self.CanDoSummon == true and self.DoMultipleEnergyOrbs == false then
+    	--print(VJ.IsCurrentAnim(self, ACT_SIGNAL_FORWARD))
+    	if self.CanDoSummon == true and self.DoMultipleEnergyOrbs == false and self.Flinching == false then
     		local hlrFloatHealth = GetConVar("hlrcustom_multihealth"):GetFloat()
     		--print("Custom_01")
     		self.AnimTbl_RangeAttack = ACT_SIGNAL_FORWARD
     		--self:PlayAnim("vjseq_attack_summon", true, 1, false, false)
-	        self.KingPinNextRangeAttackTime = CurTime() + 0.5
+	        self.KingPinNextRangeAttackTime = CurTime() + 0.8
            -- --ParticleEffectA( "tor_projectile", self.LeftBpos,Angle(0,0,0), self) -- won't follow the bone
            	if !self.BoneFollowerOn then
           	    ParticleEffectAttach("tor_projectile_d", PATTACH_ABSORIGIN_FOLLOW, self.LEarBoneFollower, 0)
@@ -732,7 +758,6 @@ end
             local vecEndPos4 = Vector(-25,-25,20)
 		    tr1 = util.TraceLine({start = pos1 +vecStartpos1, endpos = pos1 +vecEndPos1, mask = MASK_NPCSOLID})
 			--self:DrawTraceLine(tr1)
-
 			--PrintTable(tr1)		
 			if tr1.Hit or tr1.StartSolid then
 				self.Tr1Hit=true
@@ -998,29 +1023,37 @@ end
 					    self.thelast = 2
                         end
             end end) 
-        self.KingPinCanDoNextAttack = true
-		elseif self.DoMultipleEnergyOrbs == true then
+            self.KingPinCanDoNextAttack = true
+		elseif self.DoMultipleEnergyOrbs == true and self.bInSchedule != true and self.Flinching == false then
 			self.AnimTbl_RangeAttack = ACT_RANGE_ATTACK1 -- Range Attack Animations
 			--self:PlayAnim("vjges_distanceattack", true, 1)
 			self.KingPinNextRangeAttackTime = CurTime() + 0.5
-			local OrbT = 0.2
-			local entscale = 8
+			local OrbT = 0.2 -- timer delay
+			local entscale
+			if self.energy < 20 then
+				entscale = 4
+				if self.energy < 10 then
+					entscale = 2
+				end
+            else
+            	entscale = 8
+			end
 		    for i = 1, 3 do
 			timer.Simple(OrbT, function()
 		        if IsValid(self) then
-		        if !IsValid(self.entEnemy) then return end
-			--print("Custom_02")
-			local attA = self:GetAttachment(self:LookupAttachment("clawleft"))
-			local attB = self:GetAttachment(self:LookupAttachment("clawright"))
-			pos = (attA.Pos +attB.Pos) *0.5
-			local dir = self:GetConstrictedDirection(pos, 10, 1, self.entEnemy:WorldSpaceCenter() +self.entEnemy:GetVelocity() *0.85)
-			local ent = ents.Create("obj_kingpin_projectile_energy_r")
-			ent:SetEntityOwner(self)
-			ent:SetOrbTarget(self.entEnemy)
-			ent:SetPos(pos)
-			ent:SetAngles(dir:Angle())
-			ent:SetScale(entscale)
-			entscale = entscale-2
+		        if !IsValid(self.entEnemy) or self.energy <= 0 then return end
+			    --print("Custom_02")
+			    local attA = self:GetAttachment(self:LookupAttachment("clawleft"))
+			    local attB = self:GetAttachment(self:LookupAttachment("clawright"))
+				pos = (attA.Pos +attB.Pos) *0.5
+				local dir = self:GetConstrictedDirection(pos, 10, 1, self.entEnemy:WorldSpaceCenter() +self.entEnemy:GetVelocity() *0.85)
+				local ent = ents.Create("obj_kingpin_projectile_energy_r")
+				ent:SetEntityOwner(self)
+				ent:SetOrbTarget(self.entEnemy)
+				ent:SetPos(pos)
+				ent:SetAngles(dir:Angle())
+				ent:SetScale(entscale)
+				entscale = entscale-2
 				/*if !self.PO then 
 					ParticleEffect("kingpin_sphere_headglow", pos, Angle(0,0,0), self)
 					timer.Simple(OrbT-0.9, function()
@@ -1028,24 +1061,23 @@ end
 		        		self:StopParticles() end end) 
 					self.PO = true 
 				end */
-		    ParticleEffectAttach("kingpin_object_charge_bits", PATTACH_POINT_FOLLOW, ent, 1)
-			ent:Spawn()
-			ent:Activate()
-			self.EntOrb = ent
-			local phys = ent:GetPhysicsObject()
-			if IsValid(phys) then
-				phys:ApplyForceCenter(dir *2)
-			self.KingPinCanDoNextAttack = true
-			self.energy = self.energy -10
-			self.thelast = 4
-			//return end
-		    end
+		    	ParticleEffectAttach("kingpin_object_charge_bits", PATTACH_POINT_FOLLOW, ent, 1)
+				ent:Spawn()
+				ent:Activate()
+				self.EntOrb = ent
+				local phys = ent:GetPhysicsObject()
+				if IsValid(phys) then
+					phys:ApplyForceCenter(dir *2)
+		        end
+		        self.KingPinCanDoNextAttack = true
+				self.energy = self.energy -10
+				self.thelast = 4
 		    end end) 
 		    OrbT = OrbT +0.2
 		    end
 		    //self.PO = false
         end
-	    if IsValid(self.entEnemy) and self:Visible(self.entEnemy) and self.CanDoSummon==false and self.DoMultipleEnergyOrbs == false then
+	    if IsValid(self.entEnemy) and self:Visible(self.entEnemy) and self.CanDoSummon==false and self.DoMultipleEnergyOrbs == false then -- self.MovementType != VJ_MOVETYPE_STATIONARY -- used to check if it had entered 1 time in beam, but broke it!
 	    	--print("Custom_03")
 		// beamstart
 			self.AnimTbl_RangeAttack = ACT_SIGNAL1
@@ -1056,6 +1088,7 @@ end
 		    if IsValid(self) and (IsValid(self.entEnemy) && CurTime() >= self.KingPinNextRangeAttackTime && self.KingPinCanDoNextAttack == true) and self.DoMultipleEnergyOrbs==false then
 		    --self:PlayAnim(ACT_SIGNAL_ADVANCE, false, 1, true) -- ACT_SIGNAL_ADVANCE
 		    self.bInSchedule = true
+		    self.AnimTbl_RangeAttack = self.PickBeamAnim
 		    self.KingPinNextRangeAttackTime = CurTime() + 15
 		    local hlrMultidmg = GetConVar("hlrcustom_multidmg"):GetFloat()
 	        self.BeamDmg = self.BeamDmg*hlrMultidmg
@@ -1175,14 +1208,14 @@ end
 				    self.KingPinNextRangeAttackTime = CurTime() -1
 			    end
             else*/
-		if self:ShieldActive() then self:DisableShield() end
+		--if self.bShieldActive == true and !self.VJ_IsBeingControlled then self:DisableShield() end
 	end
 end
 function ENT:OnRangeAttackExecute(status, enemy, projectile)
     if status == "Init" then return true
     end
 end
-function ENT:KingpinRenaissanceInterruptBeam()		-- Called on flinch, no target or self.dead
+function ENT:KingpinRenaissanceInterruptBeam(Forced) -- Called on flinch, no target or removed
 	-- BeamInterruptCode
 	--print("KingpinRenaissanceInterruptBeam")
 	if self.bInSchedule then
@@ -1195,7 +1228,7 @@ function ENT:KingpinRenaissanceInterruptBeam()		-- Called on flinch, no target o
 		if VJ.IsCurrentAnim(self, "psychic_loop") then
 			self:PlayAnim(ACT_SIGNAL_HALT, true, 0.4, true) -- attack_beam_end 
 		end
-		self:EnableShield()
+		--self:EnableShield()
 		if self.cspBeam then
 			self.cspBeam:Stop()
 			self.cspBeam = nil
@@ -1216,22 +1249,27 @@ function ENT:KingpinRenaissanceInterruptBeam()		-- Called on flinch, no target o
 	    self.MovementType = VJ_MOVETYPE_GROUND -- How does the SNPC move?
 	    self.PickBeamAnim = VJ.PICK(self.BeamloopAnims)
         self.KingPinNextRangeAttackTime = CurTime() -1
-        self.energy = self.AddEnergy
+        if Forced == false then
+        	self.energy = self.AddEnergy -- give more energy if the beam completed normally
+        else 
+        	self.energy = self.energy/3
+        end
+        self.FlinchChance = 4
+        self.FlinchCooldown = 5
         self:PlaySoundSystem("OnReceiveOrder")
         self:StopParticles()
 	end
 	self.KingPinCanDoNextAttack = true
 end
-
 function ENT:SelectScheduleHandle(distToEne)
 if self.energy < 0 then
-    self:KingpinRenaissanceInterruptBeam()
+    self:KingpinRenaissanceInterruptBeam(false)
 end	
 	if IsValid(self.entEnemy) then
 	    if self:CanSee(self.entEnemy) then
-			local bRange = distToEne <= self.RangeAttackMaxDistance
-			local bPlayerThrow = CurTime() >= self.nextPlayerThrow && self.entEnemy:IsPlayer()
-			if bRange then
+			local InRange = distToEne <= self.RangeAttackMaxDistance
+			--local bPlayerThrow = CurTime() >= self.nextPlayerThrow && self.entEnemy:IsPlayer()
+			if InRange then
 				for _, ent in pairs(self.tblSummonedAllies) do if !IsValid(ent) then self.tblSummonedAllies[_] = nil end end
 				if table.Count(self.tblSummonedAllies) < 3 and CurTime() > self.KSCooldownDelay then
 					self.CanDoSummon = true
@@ -1279,4 +1317,19 @@ end
 			end
         end
 	end
+end
+function ENT:Controller_Initialize(ply, controlEnt)
+	ply:ChatPrint("RELOAD: Turn On/Off shield, SPACE: Emergency Beam cancel")
+	function controlEnt:OnKeyPressed(key)
+		--print(key)
+		if key == KEY_SPACE and self.VJCE_NPC.bInSchedule==true then
+		    self.VJCE_NPC:KingpinRenaissanceInterruptBeam(true)
+			ply:ChatPrint("Beam has been canceled, kingpin R energy dropped bellow half!")
+		end
+	end
+	function controlEnt:OnKeyBindPressed(key)
+		if key == IN_RELOAD and !self.VJCE_NPC:IsBusy(false) then
+			self.VJCE_NPC:OnIdleDialogue(self.entShield)
+        end
+    end
 end

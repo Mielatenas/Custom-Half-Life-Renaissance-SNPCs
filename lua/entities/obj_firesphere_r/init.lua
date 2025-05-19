@@ -66,6 +66,8 @@ function ENT:CustomOnPhysicsCollide(data, phys)
 	local effectdata = EffectData()
 	effectdata:SetOrigin(self:GetPos())
 	effectdata:SetStart(self:GetPos())
+	effectdata:SetMagnitude(8) -- number of particles
+	effectdata:SetRadius(75) -- Bounce Value to be set
 	effectdata:SetScale(1)
 	util.Effect("hotglow1", effectdata)
 	local effectdata1 = EffectData()

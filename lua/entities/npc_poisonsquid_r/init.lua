@@ -39,8 +39,10 @@ ENT.FootStepTimeRun = 0.2 -- Next foot step sound when it is running
 ENT.CanUseFlame = true
 ENT.IsPoisonBs = true
 ENT.RT = 0
+ENT.TexecuteRangeSpit = 0
 
 function ENT:CustomOnThink()
+	--print(self.TimeUntilRangeAttackProjectileRelease)
 	if self.IsSparying == true && CurTime() > self.NextSprayT then
 		-- local att = self:GetAttachment(1)
 		-- local effect = EffectData()
@@ -56,7 +58,7 @@ function ENT:CustomOnThink()
 	    if self.SpecialEvAnim then
 		local att = self:GetAttachment(1)
 		local effect = EffectData()
-		effect:SetStart(att.Pos + self:GetForward()*40 -self:GetUp()*20)
+		effect:SetStart(att.Pos + self:GetForward()*10 -self:GetUp()*20)
 		effect:SetNormal(att.Ang:Forward())
 		effect:SetEntity(self)
 		effect:SetAttachment(1)

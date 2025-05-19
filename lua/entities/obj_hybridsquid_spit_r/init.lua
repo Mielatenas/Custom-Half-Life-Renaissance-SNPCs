@@ -74,7 +74,8 @@ function ENT:CustomOnPhysicsCollide(data, phys)
 	local effectdata = EffectData()
 		effectdata:SetOrigin(self:GetPos())
 	//effectdata:SetStart(self:GetPos())
-	//effectdata:SetScale(1)
+	effectdata:SetScale(100)
+    effectdata:GetMagnitude(40)
 	util.Effect("impact_splat_hybrid", effectdata)
 	local ent = data.HitEntity
 	if IsValid(ent) && (ent:IsPlayer() || ent:IsNPC()) then

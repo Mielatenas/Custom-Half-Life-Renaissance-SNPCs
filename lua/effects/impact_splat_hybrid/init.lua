@@ -6,6 +6,8 @@
 function EFFECT:Init( data )
 	
 local vOffset = data:GetOrigin() 
+local selfEndSize = data:GetScale()
+local selfStartSize = data:GetMagnitude()
  	 
  	local NumParticles = 5	 
  	local emitter = ParticleEmitter( vOffset ) 
@@ -16,15 +18,16 @@ local vOffset = data:GetOrigin()
  			if (particle1) then 
  				 
  				particle1:SetVelocity( VectorRand() * math.Rand(0, 200) ) 
- 				 
+ 				--particle1:SetScale(selfEndSize)
+
  				particle1:SetLifeTime( 0 ) 
  				particle1:SetDieTime( math.Rand(0.3, 0.5) ) 
  				 
  				particle1:SetStartAlpha( math.Rand(100, 255) ) 
  				particle1:SetEndAlpha( 0 ) 
  				 
- 				particle1:SetStartSize( 40 ) 
- 				particle1:SetEndSize( 100 ) 
+ 				particle1:SetStartSize( selfStartSize ) 
+ 				particle1:SetEndSize( selfEndSize) 
  				 
  				particle1:SetRoll( math.Rand(0, 360) ) 
  				 
@@ -45,8 +48,8 @@ local vOffset = data:GetOrigin()
  				particle2:SetStartAlpha( 30 ) 
  				particle2:SetEndAlpha( 0 ) 
  				 
- 				particle2:SetStartSize( 100 ) 
- 				particle2:SetEndSize( 0 ) 
+ 				particle2:SetStartSize( selfStartSize ) 
+ 				particle2:SetEndSize( selfEndSize ) 
  				 
  				particle2:SetRoll( math.Rand(0, 360) ) 
  				particle2:SetRollDelta( math.Rand(-0.5, 0.5) ) 
