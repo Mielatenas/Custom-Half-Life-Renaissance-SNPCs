@@ -2,8 +2,8 @@
 {
 	"$basetexture" "decals/slime_splat_toxic"
 	"$decal" 1
-	"$decalscale" 0.30
-        "$additive" 1
+	"$decalscale" 0.20
+        "$additive" 2
         "$selfillum" 1
 
 	"%keywords" "bms"

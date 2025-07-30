@@ -20,7 +20,7 @@ ENT.ControllerParams = {
 -- use !self.VJ_IsBeingControlled, self.VJ_TheController:KeyDown(IN_ATTACK)
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ENT.VJ_NPC_Class = {"CLASS_XEN"} -- NPCs with the same class with be allied to each other
-ENT.BloodColor = "Yellow" -- The blood type, this will determine what it should use (decal, particle, etc.)
+ENT.BloodColor = VJ.BLOOD_COLOR_YELLOW -- The blood type, this will determine what it should use (decal, particle, etc.)
 ENT.BloodDecal = {"VJ_HLR1_Blood_Yellow"} -- Decals to spawn when it's damaged
 ENT.HasBloodPool = false -- Does it have a blood pool?
 ENT.Immune_AcidPoisonRadiation = true -- Makes the SNPC not get damage from Acid, poison, radiation
@@ -297,26 +297,23 @@ function ENT:CustomOnFootStepSound()
     end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-/*
+
 function ENT:TranslateActivity(act) -- 
-    if act == ACT_IDLE and self:GetState() == VJ_STATE_ONLY_ANIMATION_NOATTACK then -- if eatingData.AnimStatus== "Eating" then
-         --print("eatingData")
-        if self.IsPoisonBs or self.ToxicBull==true or self.IsHybrid then
-        	     	    print("Posion")
-            return ACT_COVER_LOW --ACT_SQUID_EAT --"eat"
+    -- if eatingData.AnimStatus== "Eating" then
+	if (self:GetNPCState() == NPC_STATE_ALERT or self:GetNPCState() == NPC_STATE_COMBAT and self:GetState() == VJ_STATE_ONLY_ANIMATION_NOATTACK) then
+        if (self.IsPoisonBs or self.ToxicBull==true or self.IsHybrid) then
+           -- return ACT_IDLE --ACT_SQUID_EAT --"eat"
      	else
-     		if not VJ.IsCurrentAnim(self, "eat") then -- check to not repeat PlayAnim every tick 
-     	    if self.EatingData.AnimStatus == "Eating" then
-     	    print("ACT_SQUID_EAT")
-     	    self:PlayAnim("vjseq_eat", false, 2, false, 0)
-     	        --return ACT_SQUID_EAT --"eat" --ACT_SQUID_EAT
-     	    end end
+     		--if not VJ.IsCurrentAnim(self, "eat") then -- check to not repeat PlayAnim every tick ACT_SQUID_DETECT_SCENT, sniff
+     	    --self:PlayAnim("vjseq_eat", false, 2, false, 0)
+     	    --return ACT_SQUID_DETECT_SCENT --"eat" --ACT_SQUID_EAT
+     	    --end
      	end
         --return act
     end
     return baseclass.Get("npc_vj_creature_base").TranslateActivity(self, act)
 end
-*/
+
 local vecZ50 = Vector(0, 0, -50)
 function ENT:OnEat(status, statusData)
 	--self.EatingData.NextCheck = curTime + 15 to add extra seconds to find next food
@@ -420,6 +417,7 @@ function ENT:RangeAttackProjPos(projectile) --
 end
 function ENT:OnRangeAttack(status, enemy) -- old function ENT:MultipleRangeAttacks() hasn't all the validations
 	--print("OnRangeAttack")
+	--print(self.EnemyData.Visible) -- Mlaes the game CRASH!!!
 	if IsValid(self.BsValidCurEnemy) then
 	    local bValid = self:GetEnemy()
 		// when the Flame stops

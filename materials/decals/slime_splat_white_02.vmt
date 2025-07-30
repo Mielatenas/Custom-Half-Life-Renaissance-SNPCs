@@ -2,8 +2,8 @@
 {
 	"$basetexture" "decals/slime_splat_white_02"
 	"$decal" 1
-	"$decalscale" 0.30
-        "$additive" 1
+	"$decalscale" 0.25
+        "$additive" 2
         "$selfillum" 1
 
 	"%keywords" "bms"

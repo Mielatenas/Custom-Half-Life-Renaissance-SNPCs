@@ -3,7 +3,7 @@
 	"$basetexture" "decals/slime_splat_ice_03"
 	"$decal" 1
 	"$decalscale" 0.30
-        "$additive" 1
+        "$additive" 2
         "$selfillum" 1
 
 	"%keywords" "bms"

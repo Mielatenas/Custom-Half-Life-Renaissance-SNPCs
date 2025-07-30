@@ -2,82 +2,76 @@ AddCSLuaFile( "shared.lua" )
 include('shared.lua')
 
 --ENT.bFreezable = false
-ENT.Model = {"models/half-life/kingpin.mdl"} -- The game will pick a random model from the table when the SNPC is spawned | Add as many as you want
+ENT.Model = {"models/half-life/kingpin.mdl"}
 
 ENT.StartHealth = 700
 ENT.HullType = HULL_MEDIUM_TALL //HULL_MEDIUM_TALL HULL_LARGE
-ENT.SightDistance = 12000 -- How far it can see | Remember to call "self:SetSightDistance(dist)" if you want to set a new value after initialize!
-ENT.SightAngle = 200 -- The sight angle | Example: 180 would make the it see all around it | Measured in degrees and then converted to radians
+ENT.SightDistance = 12000 
+ENT.SightAngle = 200
 
 ENT.ControllerParams = {
-	ThirdP_Offset = Vector(0, 0, 0), -- The offset for the controller when the camera is in third person
+	ThirdP_Offset = Vector(0, 0, 0),
 	FirstP_Bone = "MDLDEC_Bone23",
 	FirstP_Offset = Vector(15, 0, 2),
 	FirstP_ShrinkBone = false,
 }
 ---------------------------------------------------------------------------------------------------------------------------------------------
-ENT.VJ_NPC_Class = {"CLASS_XEN"} -- NPCs with the same class with be allied to each other
-ENT.BloodColor = "Yellow" -- The blood type, this will determine what it should use (decal, particle, etc.)
+ENT.VJ_NPC_Class = {"CLASS_XEN"}
+ENT.BloodColor = VJ.BLOOD_COLOR_YELLOW
 ENT.BloodParticle = {"vj_hlr_blood_yellow"}
-ENT.BloodDecal = {"VJ_HLR1_Blood_Yellow"} -- Decals to spawn when it's damaged
-ENT.HasBloodPool = true -- Does it have a blood pool?
-ENT.Immune_Electricity = true -- Immune to electrical-type damages | Example: shock or laser
-ENT.Immune_Dissolve = true -- Immune to dissolving | Example: Combine Ball
-ENT.ForceDamageFromBosses = true -- Should it receive damage by bosses regardless of its immunities? | Bosses are attackers tagged with "VJ_ID_Boss"
+ENT.BloodDecal = {"VJ_HLR1_Blood_Yellow"}
+ENT.HasBloodPool = true
+ENT.Immune_Electricity = true
+ENT.Immune_Dissolve = true
+ENT.ForceDamageFromBosses = true
 
 ENT.HasMeleeAttack = true
 ENT.AnimTbl_MeleeAttack = {ACT_MELEE_ATTACK1} -- "vjseq_attack1","vjseq_attack2"
-ENT.MeleeAttackDistance = 100 -- How close does it have to be until it attacks?
+ENT.MeleeAttackDistance = 100
 ENT.NextMeleeAttackTime = 0.5
 
-ENT.MeleeAttackAngleRadius = 100 -- What is the attack angle radius? | 100 = In front of the SNPC | 180 = All around the SNPC
-ENT.MeleeAttackDamageDistance = 100 -- How far does the damage go?
-ENT.MeleeAttackDamageAngleRadius = 100 -- What is the damage angle radius? | 100 = In front of the SNPC | 180 = All around the SNPC
-ENT.MeleeAttackAnimationFaceEnemy = true -- Should it face the enemy while playing the melee attack animation?
---ENT.MeleeAttackAnimationDecreaseLengthAmount = 0.5 -- This will decrease the time until starts chasing again. Use it to fix animation pauses until it chases the enemy.
-//ENT.MeleeAttackDamageDistance = 200 -- How far does the damage go?
-ENT.HasMeleeAttackKnockBack = false -- If true, it will cause a knockback to its enemy
-ENT.MeleeAttackDSP = 32 -- Should it apply a DSP effect to players? | false = Disable applying DSP effect | number = DSP effect ID
-ENT.MeleeAttackDSPLimit = 5 -- Should it only apply if the damage surpasses the given number? | false = Always apply | number = Only apply when damage is greater than or equal to this number
+ENT.MeleeAttackAngleRadius = 100
+ENT.MeleeAttackDamageDistance = 100 
+ENT.MeleeAttackDamageAngleRadius = 100
+ENT.MeleeAttackAnimationFaceEnemy = true
+//ENT.MeleeAttackDamageDistance = 200
+ENT.HasMeleeAttackKnockBack = false
+ENT.MeleeAttackDSP = 32
+ENT.MeleeAttackDSPLimit = 5
 
-ENT.HasRangeAttack = true -- Should the SNPC have a range attack?
-ENT.RangeAttackEntityToSpawn = "obj_kingpin_projectile_energy_r" -- The entity that is spawned when range attacking
---ENT.AnimTbl_RangeAttack = ACT_RANGE_ATTACK1 -- Range Attack Animations
+ENT.HasRangeAttack = true
+ENT.RangeAttackEntityToSpawn = "obj_kingpin_projectile_energy_r"
+--ENT.AnimTbl_RangeAttack = ACT_RANGE_ATTACK1
 ENT.NextAnyAttackTime_Range = false -- How much time until it can do any attack again? | false = Base auto calculates the duration | number = Specific time | VJ.SET = Randomized between the 2 numbers
---ENT.RangeUseAttachmentForPos = false -- Should the projectile spawn on a attachment?
---ENT.RangeAttackPos_Up = 65
---ENT.RangeAttackPos_Forward = 65
 ENT.NextRangeAttackTime = 0.9 -- How much time until it can use a range attack?
 //ENT.NextRangeAttackTime_DoRand = 6 -- False = Don't use random time | Number = Picks a random number between the regular timer and this timer
 
-ENT.CallForHelp = true -- Can it request allies for help while in combat?
-ENT.CallForHelpDistance = 2000 -- Max distance its request for help travels
-ENT.CallForHelpCooldown = 9 -- Time until it calls for help again
+ENT.CallForHelp = true 
+ENT.CallForHelpDistance = 2000 
+ENT.CallForHelpCooldown = 9 
 ENT.AnimTbl_CallForHelp = ACT_RANGE_ATTACK2
-ENT.CallForHelpAnimFaceEnemy = false -- Should it face the enemy while playing the animation?
-ENT.CallForHelpAnimCooldown = 30 -- How much time until it can play an animation again?
+ENT.CallForHelpAnimFaceEnemy = false
+ENT.CallForHelpAnimCooldown = 30
 
-ENT.ConstantlyFaceEnemy = false -- Should it face the enemy constantly?
---ENT.ConstantlyFaceEnemy_IfAttacking = true -- Should it face the enemy when attacking?
+ENT.ConstantlyFaceEnemy = false
+--ENT.ConstantlyFaceEnemy_IfAttacking = true
 ENT.NoChaseAfterCertainRange = false -- Should the SNPC not be able to chase when it's between number x and y?
 ENT.NoChaseAfterCertainRange_FarDistance = "UseRangeDistance" -- How far until it can chase again? | "UseRangeDistance" = Use the number provided by the range attack instead
 ENT.NoChaseAfterCertainRange_CloseDistance = "UseRangeDistance" -- How near until it can chase again? | "UseRangeDistance" = Use the number provided by the range attack instead
 ENT.NoChaseAfterCertainRange_Type = "OnlyRange" -- "Regular" = Default behavior | "OnlyRange" = Only does it if it's able to range attack
 
-ENT.HasDeathAnimation = true -- Does it play an animation when it dies?
-ENT.DeathDelayTime = 0.6 -- Time until it spawns the corpse, removes itself, etc.
-ENT.AnimTbl_Death = {"vjseq_diesimple", "vjseq_diebackward"} -- Death Animations
+ENT.HasDeathAnimation = true
+ENT.AnimTbl_Death = {"vjseq_diesimple", "vjseq_diebackward"} 
 ENT.DeathAnimationTime = 0.6 
 ENT.DeathAnimationChance = 1 -- Put 1 if you want it to play the animation all the time
 ENT.DeathAnimationDecreaseLengthAmount = 0 -- This will decrease the time until it turns into a corpse
 
-ENT.FlinchChance = 4 -- Chance of flinching from 1 to x | 1 = Always flinch
-	-- To let the base automatically detect the animation duration, set this to false:
+ENT.FlinchChance = 4
 ENT.FlinchCooldown = 5
 ENT.CanFlinch = true
 ENT.AnimTbl_Flinch = ACT_SIGNAL_HALT 
 	-- ====== Sound File Paths ====== --
-ENT.HasExtraMeleeAttackSounds = true -- Can it play extra melee attack sound effects?
+ENT.HasExtraMeleeAttackSounds = true
 -- Leave blank if you don't want any sounds to play
 ENT.SoundTbl_Breath = {"npc/kingpin/kingpin_breath01.mp3","npc/kingpin/kingpin_breath02.mp3"}
 ENT.SoundTbl_FootStep = {"vj_hlr/gsrc/npc/kingpin/kingpin_move.wav", "vj_hlr/gsrc/npc/kingpin/kingpin_moveslow.wav"}
@@ -111,9 +105,9 @@ ENT.CanDoSummon = false
 ENT.KSCooldownDelay = 0
 ENT.thelast = nil
 ENT.TimeUntilRangeAttackProjectileRelease = false -- Breaks Kingpin if number as is intended to be range event-based
-ENT.RangeAttackMinDistance = 20 -- Min range attack distance
-ENT.RangeAttackMaxDistance = 10000 -- -- beam and energy orbs ignore this
-ENT.RangeAttackAngleRadius = 100 -- What is the attack angle radius? | 100 = In front of it | 180 = All around it
+ENT.RangeAttackMinDistance = 20
+ENT.RangeAttackMaxDistance = 10000 -- beam and energy orbs ignore this
+ENT.RangeAttackAngleRadius = 100
 //ENT.RangeToMeleeDistance = 1 -- How close does it have to be until it uses melee? // breaks the Rangeattackcode when number is reached !!!!!!!
 --ENT.RangeToMeleeDistance = math.huge // breaks Rangeattackcode when number IS reached and melee code activates !!!!!!!
 
@@ -581,22 +575,6 @@ function ENT:StopAttackEffects()
 		self.entEnemy:StopParticles()
 	end
 	--if IsValid(self.entCurThrow) then self.entCurThrow:StopParticles() end
-end
-
-function ENT:CustomOnRemove()
-	self:KingpinRenaissanceInterruptBeam(true)
-	--self:UpdatePhysicsEnts()
-	/*
-	for k, v in pairs(self.tblPhysEnts) do
-		local phys = v:GetPhysicsObject()
-		if IsValid(phys) then
-			phys:EnableGravity(true)
-		end
-	end
-	if self.bThrowPlayer && IsValid(self.entEnemy) && self.entEnemy:IsPlayer() then
-		self.entEnemy:SetGravity(1)
-	end*/
-	self:StopAttackEffects()
 end
 	/*
 function ENT:UpdatePhysicsEnts()
@@ -1332,4 +1310,60 @@ function ENT:Controller_Initialize(ply, controlEnt)
 			self.VJCE_NPC:OnIdleDialogue(self.entShield)
         end
     end
+end
+function ENT:CustomOnRemove()
+	self:KingpinRenaissanceInterruptBeam(true)
+	--self:UpdatePhysicsEnts()
+	/*
+	for k, v in pairs(self.tblPhysEnts) do
+		local phys = v:GetPhysicsObject()
+		if IsValid(phys) then
+			phys:EnableGravity(true)
+		end
+	end
+	if self.bThrowPlayer && IsValid(self.entEnemy) && self.entEnemy:IsPlayer() then
+		self.entEnemy:SetGravity(1)
+	end*/
+	self:StopAttackEffects()
+end
+local colorYellow = VJ.Color2Byte(Color(255, 221, 35))
+
+function ENT:HandleGibOnDeath(dmginfo, hitgroup)
+	self.HasDeathSounds = false
+	if self.HasGibOnDeathEffects then
+		local effectData = EffectData()
+		effectData:SetOrigin(self:GetPos() + self:OBBCenter())
+		effectData:SetColor(colorYellow)
+		effectData:SetScale(120)
+		util.Effect("VJ_Blood1", effectData)
+		effectData:SetScale(8)
+		effectData:SetFlags(3)
+		effectData:SetColor(1)
+		util.Effect("bloodspray", effectData)
+		util.Effect("bloodspray", effectData)
+	end
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/voltigore_gib5.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 30))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/voltigore_gib5.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 20))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/voltigore_gib6.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 60))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/voltigore_gib7.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 30))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/voltigore_gib7.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 30))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/voltigore_gib7.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 30))})
+
+
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib1.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 40))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib2.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 20))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib3.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 30))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib4.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 35))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib1.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 10))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib2.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 1, 20))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib3.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 50))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib4.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 15))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib5.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 1, 50))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib6.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 55))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib7.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 1, 40))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib8.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 45))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib9.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 0, 25))})
+	self:CreateGibEntity("obj_vj_gib", "models/vj_hlr/gibs/agib10.mdl", {BloodType="Yellow", CollisionDecal="VJ_HLR1_Blood_Yellow", Pos=self:LocalToWorld(Vector(0, 1, 15))})
+	self:PlaySoundSystem("Gib", "vj_base/gib/splat.wav")
+	return true, {AllowSound = false}
 end
