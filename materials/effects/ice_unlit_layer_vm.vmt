@@ -1,0 +1,19 @@
+"UnlitGeneric"
+{
+    "$basetexture" "models/debug/debugwhite"
+    "$detail" "models/debug/debugwhite"
+    "$detailblendfactor" "1"
+    "$detailblendmode" "0"
+    "$translucent" "1"
+    "$freezelevel" "0"
+    "Proxies"
+    {
+        "Clamp"
+        {
+            "srcVar1" "$freezelevel"
+            "min" "0"
+            "max" "1"
+            "resultVar" "$detailblendfactor"
+        }
+    }
+}

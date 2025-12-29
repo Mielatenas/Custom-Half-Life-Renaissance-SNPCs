@@ -7,14 +7,14 @@ ENT.Model = {"models/icesphere_small.mdl"} -- "models/icesphere_large.mdl","mode
 ENT.RemoveOnHit = true
 ENT.PaintDecalOnCollide = true -- Should it paint decals when it collides with something? | Use this only when using a projectile that doesn't get removed when it collides with something
 ENT.DecalTbl_OnCollideDecals = {"HLR_Splat_Toxic"}
-ENT.CollideCodeWithoutRemoving = false
+--ENT.CollideCodeWithoutRemoving = false
 ENT.NextCollideWithoutRemove = VJ_Set(1, 1)
 --ENT.MoveCollideType = MOVECOLLIDE_DEFAULT
 ENT.MoveCollideType = nil
 ENT.CollisionGroupType = nil
 ENT.SolidType = SOLID_VPHYSICS
 
-ENT.DecalTbl_DeathDecals = {"HLR_Splat_Toxic"}
+ENT.CollisionDecal = {"HLR_Splat_Toxic"}
 ENT.DoesRadiusDamage = true
 ENT.RadiusDamageRadius = 60
 ENT.RadiusDamage = 4
@@ -22,10 +22,9 @@ ENT.RadiusDamageUseRealisticRadius = true
 ENT.RadiusDamageType = DMG_ACID
 ENT.RadiusDamageForce = 2 -- Put the force amount it should apply | false = Don't apply any force
 ENT.DoesDirectDamage = true -- Should it do a direct damage when it hits something?
-ENT.DirectDamage = 3
+ENT.DirectDamage = 1
 
 ENT.ToxicDeathSoundPitch = VJ_Set(50, 180)
---ENT.SoundWater_Tbl = {"waterphysics/watermove1.ogg", "waterphysics/watermove3.ogg", "waterphysics/watersplash1.ogg"}
 
 ENT.SoundTbl_Idle = {"waterphysics/watermove1.ogg", "waterphysics/watermove3.ogg", "waterphysics/watersplash1.ogg"}
 ENT.IdleSoundChance = 12
@@ -49,14 +48,14 @@ local function CustomHLRCountAndLimitToxmines()
         return true -- Return true to indicate that new entities can be created
     end
 end
-function ENT:CustomOnPreInitialize()
+function ENT:PreInit()
 	local hlrcustomToxicminesMax = GetConVar("hlrcustom_toxic_mines_max"):GetInt()
 	CustomHLRmaxTmines = hlrcustomToxicminesMax
     self.BullOwner = self:GetOwner()
     self.VJ_OwnerClassTbl = self.BullOwner.VJ_NPC_Class
 end
 
-function ENT:CustomOnInitialize()
+function ENT:Init()
 	self:SetModelScale( math.Rand(self.CustomModelScale.a, self.CustomModelScale.b),4) -- to make it get a buried-looking inside walls! deltatime solves crazy origin!
 	--self:SetCollisionGroup(COLLISION_GROUP_PROJECTILE)
 	self:PhysicsInit(self.SolidType)
@@ -104,7 +103,7 @@ function ENT:CustomOnInitialize()
 		--self.myCoolBone = nil 
 	    self.RemoveOnHit = false
         self.PaintDecalOnCollide = true -- Should it paint decals when it collides with something? | Use this only when using a projectile that doesn't get removed when it collides with something
-        self.CollideCodeWithoutRemoving = true
+        self.CollisionBehavior = VJ.PROJ_COLLISION_PERSIST
         self.NextCollideWithoutRemove = VJ_Set(1, 2)
 
         self.RadiusDamageRadius = 30
@@ -117,17 +116,9 @@ function ENT:SetEntityOwner(ent) -- unused
 end
 */
 
-function ENT:CustomOnThink()
+function ENT:OnThink()
 	local curTime = CurTime()
 	self.ModelScale = self:GetModelScale()
-	/*util.AddNetworkString( "UpdateToxBomb_CustomHLR" )
-	net.Receive( "UpdateToxBomb_CustomHLR", function( len, ply )
-		-- We read in the same order as we written
-		self.entHit = net.ReadEntity()
-		self.myNewPos = net.ReadVector()
-		self.myCoolBone = net.ReadUInt(8)
-		--idk why the three variables are readed by all like they were globals, they keep changing their pos
-	end )*/
     if IsValid(self.entHit) and self.closestBoneIndex then
         self:SetAngles(self:GetAngles())
         local RightBpos, _ = self.entHit:GetBonePosition(self.closestBoneIndex) -- this gets the proper position, can't be used to attach a particle effect         
@@ -142,14 +133,6 @@ function ENT:CustomOnThink()
 		   --self.phys:ApplyTorqueCenter( Vector(4.5,14,41) )
            -- self.phys:SetPos(RightBpos, false) --false to teleport
         end 
-        /*--print("COMON BLUE")
-        util.AddNetworkString( "UpdateToxBomb_CustomHLR" )
-        net.Start("UpdateToxBomb_CustomHLR")
-        net.WriteEntity(self.entHit) 
-        net.WriteVector(RightBpos)
-        net.WriteUInt(self.closestBoneIndex,8)
-        net.Broadcast()
-        */
         if !self.UpdateToxBomb_CustomHLR then
             self.UpdateToxBomb_CustomHLR = true
         end
@@ -163,20 +146,6 @@ function ENT:CustomOnThink()
 	        end
         end
     end
-    /*if IsValid(self.entHit) and self.RemoveOnHit==false then
-    	--print("aaa")
-        if IsValid(self.phys) then
-		   --self.phys:ApplyTorqueCenter( Vector(4.5,14,41) )
-        end 
-    	if !self.alreadyparented then
-    		--self:SetPos(self.myNewPos, true)
-    		--print("parentedalready")
-		    --self:SetParent(self.entHit,self.myCoolBone)
-            --self.entHit:SetParentPhysNum(self.myCoolBone) -- won't do anything serverside
-            --self:AddEffects(EF_FOLLOWBONE)
-            self.alreadyparented = true
-        end
-    end */
 	if curTime > self.nextToxicDmgT then -- the rest DID need a timer fix
 		self.nextToxicDmgT = curTime +self.ModelScale
 		self:SetModelScale(math.Rand(self.CustomModelScale.a, self.CustomModelScale.b),3)
@@ -207,20 +176,9 @@ function ENT:CustomOnThink()
 		function(entHit) -- have to test if works for nextbot
 			return self.TFilter1 && (!entHit:IsPlayer() || !tobool(GetConVarNumber("ai_ignoreplayers"))) --true if no player or true if ai_ignoreplayers is 0
 		end, self.RadiusDamageType, false, self.VJ_OwnerClassTbl)
-		/*if table.Count(tblEnts) > 0 then
-		end*/
-		/*self:DeathEffects()
-		self:DoDamageCode(data, phys)
-		--Can't use VJ_SphereDamage when called on a projectile since harms ents allies, may be VJ base version
-	        local CheckIfPlayer = false
-		    if IsValid(self) then
-			   CheckIfPlayer = !self:IsPlayer()
-		    end 
-		    util.VJ_SphereDamage(self.BullOwner, nil, dmgorigin, self.RadiusDamageRadius, 0.5, self.RadiusDamageType, true, true, {Force=1, UpForce=0,UseConeDegree=30,UseConeDirection=self:GetForward()})
-    */
     end
     if self:WaterLevel() == 3 and self.UnderWater==nil then 
-		VJ_EmitSound(self, self.SoundTbl_Idle, 75, 100)
+		VJ.EmitSound(self, self.SoundTbl_Idle, 75, 100)
 		self.UnderWater=true
 	end
 	if curTime > self.delayRemove then
@@ -231,11 +189,7 @@ function ENT:CustomOnThink()
 	    end
 	end
 end 
-/*function ENT:DeathEffects()
-	self:DoDamageCode()
-	self:SetDeathVariablesTrue(nil, nil, false)
-end */
-function ENT:CustomOnPhysicsCollide(data, phys)
+function ENT:OnCollisionPersist(data, phys)
 	self:SetNWBool("active", true)
 	self.data = data
 	local entHit = data.HitEntity 
@@ -292,36 +246,20 @@ function ENT:CustomOnPhysicsCollide(data, phys)
             	self.closestBoneIndex = closestBones[1] -- You can change this to select a different bone if needed 
             	if IsValid(entHit) then
             	self.entHit = entHit  
-                --timer.Simple(0.1, function() if IsValid(self) and IsValid(self.entHit) then
                 self:SetPos(self.hitPos, false) --true to teleport
                 self:SetParent(self.entHit,self.closestBoneIndex)
                 --entHit:SetParentPhysNum(self.closestBoneIndex) -- won't do anything serverside
                 self:AddEffects(EF_FOLLOWBONE)
                 self:SetOwner(self.entHit)
                 ----self:AddEffects(EF_BONEMERGE)
-                --end end)
                 end
         	end
     	end      
-                /*
-                --self:SetNWInt("attachmentStart", closestBoneIndex) -- unused
-                util.AddNetworkString("SendPosition")
-                net.Start("SendPosition")
-                net.WriteVector(hitPos)
-                net.Broadcast()
-               	--self.phys:SetPos(RightBpos)
-				--self:SetPos(RightBpos)
-                 */
--- we have to make the server get data from client, the mines attach to the bone after 3-6 secs
---seems like server needs to get updated position values from the client continuosly, that explains why some don't attach to the bones due to unsync
 	    if entHit:GetClass() != "npc_turret_floor" then
             local tblEnts = util.CustomHlrBlastDmg(self, self.BullOwner, dmgorigin, self.RadiusDamageRadius, self.RadiusDamage,
 		    function(entHit) -- have to test if works for nextbot
 			    return self.TFilter1 && (!entHit:IsPlayer() || !tobool(GetConVarNumber("ai_ignoreplayers"))) --true if no player or true if ai_ignoreplayers is 0
 		    end, self.RadiusDamageType, false, self.VJ_OwnerClassTbl)
-		/*if table.Count(tblEnts) > 0 then
-		end*/
-		    --util.VJ_SphereDamage(self, self, dmgorigin, self.RadiusDamageRadius, self.RadiusDamage, self.RadiusDamageType, true, true, {Force=3, UpForce=0})
 			if entHit:IsPlayer() then
 			    entHit:ScreenFade(SCREENFADE.IN,Color(10,40,0,200), 0.3, 0)
 			end
@@ -330,43 +268,20 @@ function ENT:CustomOnPhysicsCollide(data, phys)
 			entHit:Fire("selfdestruct", "", 0)
 			entHit.bSelfDestruct = true
 		end
-    else
-    	if self.BullOwner.ToxicBull==true then
-		    --    self.phys:SetBuoyancyRatio(1)
-			--ParticleEffectAttach("toxicsquid_gas_toxic01", PATTACH_POINT_FOLLOW, self,0)
-			/*
-            if self.CreateParticleEffect then
-            print("CreateParticleEffect method is available.") 
-            else
-            print("CreateParticleEffect method is not available for this entity.") 
-            end
-		    local particleEffect = self:CreateParticleEffect("toxicsquid_gas_toxic01", 1, options)
-	        */
-	    end
 	end
 	if self.RemoveOnHit==true then
 	    self:EmitSound("npc/bullsquid/splat" .. math.random(1,2) .. ".wav", 75, 100)
-	    --local effectdata = EffectData()
-	    --effectdata:SetOrigin(self:GetPos())
-	    --util.Effect("impact_splat", effectdata)
 	    ParticleEffect("spore_splash", self:GetPos(), self:GetAngles(), self.entOwner)
 	end
     timer.Simple(self.delayRemove, function() if IsValid(self) then
     self:CustomHlrToxicGasDeath(data, phys, dmgorigin)
         end 
     end) 
-	return true
+	--return true
 end
 function ENT:CustomHlrToxicGasDeath(data, phys, dmgorigin)
 	dmgorigin = dmgorigin or self:GetPos()
-    --self.RemoveOnHit=true
-		--self.StopAndDestroyParticles()
-	    --local effectdata = EffectData()
-	    --effectdata:SetOrigin(self:GetPos())
-	    --util.Effect("impact_splat", effectdata)
-	    --util.Decal("HLR_Splat_Toxic", data.HitPos +data.HitNormal, data.HitPos -data.HitNormal)
 	ParticleEffect("spore_splash_02", self:GetPos(), self:GetAngles(), self.entOwner)
-	    --self:DoDamageCode(data, phys)
 	local CheckIfPlayer = false
 		if IsValid(self) then
 			CheckIfPlayer = !self:IsPlayer()
@@ -375,9 +290,6 @@ function ENT:CustomHlrToxicGasDeath(data, phys, dmgorigin)
 		function(entHit) -- have to test if works for nextbot
 			return self.TFilter1 && (!entHit:IsPlayer() || !tobool(GetConVarNumber("ai_ignoreplayers"))) --true if no player or true if ai_ignoreplayers is 0
 		end, self.RadiusDamageType, false, self.VJ_OwnerClassTbl)
-		/*if table.Count(tblEnts) > 0 then
-		end*/
-	--util.VJ_SphereDamage(self, self, dmgorigin, self.RadiusDamageRadius, self.RadiusDamage, self.RadiusDamageType, true, true, {Force=3, UpForce=0})
 	self:EmitSound("npc/bullsquid/splat" .. math.random(1,2) .. ".wav", 40, math.random(self.ToxicDeathSoundPitch.a, self.ToxicDeathSoundPitch.b))
 	SafeRemoveEntityDelayed( self, 0.1 )
  end

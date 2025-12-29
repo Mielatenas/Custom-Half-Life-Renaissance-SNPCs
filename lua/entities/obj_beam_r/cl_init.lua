@@ -8,7 +8,9 @@ function ENT:Initialize()
 //self:Draw()
 local playerfov = LocalPlayer():GetFOV()
 self.playerfov = playerfov
-self.renderaddvec = Vector(225,225,225)
+--self.renderaddvec = Vector(225,225,225)
+self.minBounds = Vector(0,0,0)
+self.maxBounds = Vector(0,0,0)
 end
 
 function ENT:GetStartPos(owner)
@@ -51,7 +53,25 @@ function ENT:GetEndPos()
 	//print(posDest)
 	return posDest -- THE obj_pointed_tg_R entity
 end
+function ENT:Think()
+    local posStart = self:GetStartPos()
+    local posEnd   = self:GetEndPos()
+    if not posStart or not posEnd then return end
 
+    local padding = 32
+
+    self.minBounds.x = math.min(posStart.x, posEnd.x) - padding
+    self.minBounds.y = math.min(posStart.y, posEnd.y) - padding
+    self.minBounds.z = math.min(posStart.z, posEnd.z) - padding
+
+    self.maxBounds.x = math.max(posStart.x, posEnd.x) + padding
+    self.maxBounds.y = math.max(posStart.y, posEnd.y) + padding
+    self.maxBounds.z = math.max(posStart.z, posEnd.z) + padding
+
+    self:SetRenderBoundsWS(self.minBounds, self.maxBounds) -- in common with how the beam renders, wrong render bounds cause the beam texture to dissapear, if big, can mess up map meshes and get darker a lot of it! - fixed 2025
+end
+
+/*
 function ENT:Think()
 --print("THINK")
 
@@ -60,8 +80,8 @@ function ENT:Think()
 		//print(posDest)
 
 	if !posDest then return end
-	self:SetRenderBoundsWS(posDest, self:GetEndPos(), self.renderaddvec*100) -- has something in common with how the beam renders, wrong render bounds cause the beam texture to dissapear
-end
+	self:SetRenderBoundsWS(posDest, self:GetEndPos(), self.renderaddvec*100) 
+end */
 
 function ENT:Draw()
 //print("DRAW")
@@ -93,7 +113,7 @@ function ENT:Draw()
 	if amplitude != 0 && CurTime() >= self.nextUpdate then self:RefreshBeam(ang, pos, posDest); self.nextUpdate = CurTime() +updateRate end
 
 	local eyeang = EyeAngles():Add( RenderAngles()) -- EyePos() and EyeAngles() are the current cam.3d ang and pos not the player's.
-	cam.Start3D(EyePos(), eyeang) -- the rest 7 arguments just messes view, from here below not the cause of the beam not drawing (fixed 2024)
+	--cam.Start3D(EyePos(), eyeang) -- the rest 7 arguments just messes view, from here below not the cause of the beam not drawing (fixed 2024)
 		render.SetMaterial(self.texture)
 		if amplitude == 0 then
 			render.DrawBeam(posStart, posDest, width, 1, 1, color)
@@ -104,8 +124,8 @@ function ENT:Draw()
 			end
 			render.EndBeam()
 		end
-	cam.End3D()
-			//print("End part of Draw")
+	--cam.End3D()
+			--print("End part of Draw")
 end
 
 function ENT:GetRandomPos()  -- have to test if this creates a random pos

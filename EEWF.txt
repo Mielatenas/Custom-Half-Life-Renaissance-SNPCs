@@ -1,0 +1,16 @@
+Commit: Freeze Module + Optimizations
+Freezemodule:
+-added custom client-side ice-overlays visuals.
+-freezes Players/NPCs/Nextbots/Props/Ragdolls, without breaking their AI
+-frozen entities do less melee-damage if DMG_SLASH or DMG_CLUB the more freezelevel.
+-added ice delayfactor to victim player weapons. Beware of your arsenal!
+-reduced icesphere's damage, Frostsquid relies on the freeze feature heavily! 
+Other bugfixes:
+
+-added client cvar to set a max of entites that can be drawn on the client as frozen, so every player can have their own effects.
+-added client cvar to draw a max of particles per entity, every player has their own client-side value
+-added cvar to turn off Freeze Module.
+-added cvar to set freeze effectiveness, for now is calculated through entities health, with the idea of simulate immunity on god-like Npcs/nextbots/players, bar will define how resistant they are.
+
+-fixed "Changing collision rules within a callback is likely to cause crashes!" warning on Toxicmines, they use vj base timer.simple in collision rules.
+-fixed Kingpin R beams darkening the world meshes/brushes on a global scale, due to their unproportional world space render bounds coordinates.

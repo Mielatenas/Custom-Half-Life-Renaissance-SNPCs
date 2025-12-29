@@ -1,22 +1,10 @@
 local meta = FindMetaTable("Weapon")
-local tblPlayerSpeed = {}
-meta = FindMetaTable("Player")
-
-function meta:FadeScreen(col, durFade, durHold)
-	col = col || Color(0,0,0,255)
-	durFade = durFade || 2
-	durHold = durHold || 0
-	umsg.Start("HLR_FadeScreen", self)
-		umsg.String(col.r .. "," .. col.g .. "," .. col.b .. "," .. col.a)
-		umsg.Float(durFade)
-		umsg.Float(durHold)
-	umsg.End()
-end
-
+--local tblPlayerSpeed = {}
+--meta = FindMetaTable("Player")
 /*
 hook.Add("PlayerStepSoundTime", "PlayerStepSoundTime_Frozen", function(pl, iType, bWalking)
 	if pl:CustomHLRIsFrozen() or pl:IsFrozen() then
-		local iPercentFrozen = pl:FrozenPercentage()
+		--local iPercentFrozen = pl:FrozenPercentage()
 		local fStepTime = 350
 		local fMaxSpeed = pl:GetMaxSpeed()
 		if iType == STEPSOUNDTIME_NORMAL || iType == STEPSOUNDTIME_WATER_FOOT then
@@ -38,16 +26,7 @@ hook.Add("PlayerStepSoundTime", "PlayerStepSoundTime_Frozen", function(pl, iType
 		return fStepTime *math.Clamp(iPercentFrozen /50, 1, 2)
 	end
 end)
-*/
-function meta:SetPermanentlyFrozen(bPerm)
-	if bPerm then
-		self:SetFrozen(100)
-		self.tblFrozen.permanent = true
-		return
-	end
-	if !self.tblFrozen then return end
-	self.tblFrozen.permanent = nil
-end
+
 
 function meta:SetFrozen(iPercent)
 	if self:IsPossessing() then return end
@@ -137,97 +116,12 @@ function meta:SetFrozen(iPercent)
 	self:SetNetworkedFloat("FreezePercent", self.tblFrozen.iPercent)
 	self.tblFrozen.nextUnfreeze = CurTime() +3
 end
+*/
 
-function meta:FrozenPercentage()
-	return self.bFrozen && self.tblFrozen.iPercent || 0
-end
-
-local function BreakIceGibs(ent)
-	local tblIceShards = {}
-	local i = 0
-	local bonepos, boneang = ent:GetBonePosition(i)
-	while bonepos do
-		local flDistMin = 999
-		for k, v in pairs(tblIceShards) do
-			if i != k then
-				local flDist = bonepos:Distance(ent:GetBonePosition(k))
-				if flDist < flDistMin then flDistMin = flDist end
-			end
-		end
-		if flDistMin > 4 then
-			local ent = ents.Create("obj_gib")
-			ent:SetModel("models/gibs/ice_shard0" .. math.random(1,6) .. ".mdl")
-			ent:SetPos(bonepos)
-			ent:SetAngles(boneang)
-			ent:Spawn()
-			ent:Activate()
-			tblIceShards[i] = ent
-		end
-		i = i +1
-		bonepos, boneang = ent:GetBonePosition(i)
-	end
-	ent:EmitSound("physics/glass/glass_largesheet_break" .. math.random(1,3) .. ".wav", 75, 100)
-	if ent:IsPlayer() then
-		local pos = ent:GetPos()
-		ent:Spawn()
-		ent:SetPos(pos)
-		ent:KillSilent()
-	else ent:Remove() end
-end
-
-hook.Add("OnNPCKilled", "HLR_BreakFrozen_NPC", function(npc, entKiller, entWeapon) -- a frozen npc dies
-	   --print(npc) 
-	if npc:IsNPC() then
-	    if npc:FrozenPercentage() >= 80 then
-		    BreakIceGibs(npc)
-	    end
-	end
-end)
-
-hook.Add("PlayerDeath", "HLR_BreakFrozen_Player", function(entVictim, entInflictor, entKiller)
-	if entVictim:FrozenPercentage() >= 80 then
-		BreakIceGibs(entVictim)
-	end
-end)
-
-function meta:UnFreeze(iPercent)
-	iPercent = iPercent || 100
-	if !self.bFrozen then return end
-	if self.tblFrozen.iPercent -iPercent < 0 then iPercent = self.tblFrozen.iPercent end
-	self.tblFrozen.iPercent = self.tblFrozen.iPercent -iPercent
-	self:SetNetworkedFloat("FreezePercent", self.tblFrozen.iPercent)
-	local iScale = 255 -((self.tblFrozen.iPercent /100) *155)
-	
-	local flScale = 100 -self.tblFrozen.iPercent
-	self:SetWalkSpeed((self.tblFrozen.speedWalk /100) *flScale)
-	self:SetRunSpeed((self.tblFrozen.speedRun /100) *flScale)
-	self:SetJumpPower((self.tblFrozen.jumpPower /100) *flScale)
-	
-	local flDuckScale = math.Clamp(self.tblFrozen.iPercent /10, 1, 10)
-	self:SetDuckSpeed(self.tblFrozen.duckSpeed *flDuckScale)
-	self:SetUnDuckSpeed(self.tblFrozen.unDuckSpeed *flDuckScale)
-	
-	if self.tblFrozen.iPercent > 0 then return end
-	hook.Remove("Think", "ThinkEntFrozen" .. self:EntIndex())
-	local rp = RecipientFilter()
-	rp:AddAllPlayers()
-	umsg.Start("ENT_FreezeEffect_Render_End", rp)
-		umsg.Entity(self)
-	umsg.End()
-	self:SetWalkSpeed(self.tblFrozen.speedWalk)
-	self:SetRunSpeed(self.tblFrozen.speedRun)
-	self:SetJumpPower(self.tblFrozen.jumpPower)
-	self:SetDuckSpeed(self.tblFrozen.duckSpeed)
-	self:SetUnDuckSpeed(self.tblFrozen.unDuckSpeed)
-	self:SetPlaybackRate(1)
-	self.bFrozen = false
-	self.tblFrozen = nil
-end
-
-function meta:CustomHLRIsFrozen() -- overrided and broke the Prime SWEP addon and the gmod IsFrozen function and had to rename it!
-	return self.bFrozen || IsFrozen(self)
-end
-meta = FindMetaTable("NPC")
+--function meta:CustomHLRIsFrozen() -- overrided and broke the Prime SWEP addon and the gmod IsFrozen function and had to rename it!
+--	return self.bFrozen || IsFrozen(self)
+--end
+local meta = FindMetaTable("NPC")
 /*
 function meta:SetNoTarget(bNoTarget)
 	if bNoTarget then
@@ -255,28 +149,14 @@ function meta:SetNoTarget(bNoTarget)
 end
 
 */
-function meta:CanSee(ent, viewAng)
+function meta:HLRCustomCanSee(ent, viewAng)
 	local ang = self:CustomHLRenaissanceGetAngleToPos(ent:GetPos())
 	local viewAng = self.fViewAngle || viewAng || 90
 	if (ang.y <= viewAng || ang.y >= 360 -viewAng) && self:Visible(ent) then return true end
 	return false
 end
 
-function meta:FrozenPercentage()
-	return self.bFrozen && self.tblFrozen.iPercent || 0
-end
-
-function meta:SetPermanentlyFrozen(bPerm)
-	if self:IsBoss() then return end
-	if bPerm then
-		self:SetFrozen(100)
-		self.tblFrozen.permanent = true
-		return
-	end
-	if !self.tblFrozen then return end
-	self.tblFrozen.permanent = nil
-end
-
+/*
 function meta:SetFrozen(iPercent)
 	if self.bScripted && !self.bFreezable then return end
 	iPercent = iPercent || 100
@@ -327,38 +207,14 @@ function meta:SetFrozen(iPercent)
 	end
 	self.tblFrozen.nextUnfreeze = CurTime() +3
 end
+*/
 
-function meta:UnFreeze(iPercent)
-	iPercent = iPercent || 100
-	if !self.bFrozen then return end
-	if self.tblFrozen.iPercent -iPercent < 0 then iPercent = -self.tblFrozen.iPercent end
-	self.tblFrozen.iPercent = self.tblFrozen.iPercent -iPercent
-	self:SetNetworkedFloat("FreezePercent", self.tblFrozen.iPercent)
-	local iScale = 255 -((self.tblFrozen.iPercent /100) *155)
-	if self.bScripted then
-		local iMax = self.tblFrozen.iYawSpeed
-		self:SetMaxYawSpeed((100 -(self.tblFrozen.iPercent /100)) *iMax)
-	end
-	if self.tblFrozen.iPercent > 0 then return end
-	hook.Remove("Think", "ThinkEntFrozen" .. self:EntIndex())
-	local rp = RecipientFilter()
-	rp:AddAllPlayers()
-	umsg.Start("ENT_FreezeEffect_Render_End", rp)
-		umsg.Entity(self)
-	umsg.End()
-	self:SetMovementActivity(self.tblFrozen.actMove)
-	self:SetPlaybackRate(1)
-	self.bFrozen = false
-	self.tblFrozen = nil
-end
-
-function meta:CustomHLRIsFrozen()
-	return self.bFrozen || IsFrozen(self)
-end
-meta = FindMetaTable("Entity")
-
-local tblEntsIgnited = {}
+--function meta:CustomHLRIsFrozen()
+	--return self.bFrozen || IsFrozen(self)
+--end
+--meta = FindMetaTable("Entity")
 /*
+local tblEntsIgnited = {}
 local Ignite = meta.Ignite
 function meta:Ignite(...)
 	local dur, radius = ...
@@ -448,11 +304,7 @@ function meta:Extinguish()
 	tblEntsIgnited[self] = nil
 end
 */
-local IsOnFire = meta.IsOnFire
-function meta:IsOnFire() -- overrides 
-	return tblEntsIgnited[self] != nil || IsOnFire(self)
-end
-
+/*
 function meta:TurnDegree(iDeg, posAng, bPitch, iPitchMax)
 	if posAng then
 		local sType = type(posAng)
@@ -505,7 +357,6 @@ function meta:TurnDegree(iDeg, posAng, bPitch, iPitchMax)
 	ang.y = ang.y +iDeg
 	self:SetAngles(ang)
 end
-
 function meta:DoExplode(dmg, radius, owner, bDontRemove)
 	radius = radius || 260
 	dmg = dmg || 85
@@ -560,7 +411,6 @@ function meta:DoExplode(dmg, radius, owner, bDontRemove)
 	end
 	if !bDontRemove then self:Remove() end
 end
-
 meta = FindMetaTable("Player")
 tblNoTargetPlayers = {}
 local SetNoTarget = meta.SetNoTarget
@@ -586,3 +436,4 @@ meta = FindMetaTable("PhysObj")
 function meta:SetAngleVelocity(ang)
 	self:AddAngleVelocity(self:GetAngleVelocity() *-1 +ang)
 end
+*/

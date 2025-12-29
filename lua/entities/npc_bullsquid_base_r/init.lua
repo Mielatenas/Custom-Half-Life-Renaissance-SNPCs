@@ -194,7 +194,7 @@ function ENT:OnInput(key, activator, caller, data) -- no key received on flinch,
     end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomOnThink_AIEnabled()
+function ENT:OnThinkActive()
 	if CurTime() >= self.nextBlink then
 		local iDelay = 0.1
 		self.nextBlink = CurTime() +math.Rand(iDelay,5)
@@ -288,12 +288,11 @@ end
 function ENT:OnThinkAttack(isAttacking, enemy)
 
 end
-
-function ENT:CustomOnFootStepSound()
+function ENT:OnFootstepSound(moveType, sdFile)
 	if self:WaterLevel() ==1 then 
-		VJ_EmitSound(self, self.SoundWater_Tbl, 75, 100)
+		VJ.EmitSound(self, self.SoundWater_Tbl, 75, 100)
    	elseif self:WaterLevel() ==2 then
-   		VJ_EmitSound(self, self.SoundWater_Tbl, 75, 100)
+   		VJ.EmitSound(self, self.SoundWater_Tbl, 75, 100)
     end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -367,10 +366,7 @@ function ENT:OnEat(status, statusData)
 	end
 	return 0
 end
-function ENT:CustomOnTakeDamage_AfterDamage(dmginfo, hitgroup)
-
-end
-function ENT:CustomOnAlert(ent)
+function ENT:OnAlert(ent)
 	if math.random(1, 3) == 1 then
 		if ent.VJ_ID_Headcrab or ent:GetClass() == "npc_headcrab" or ent:GetClass() == "npc_headcrab_black" or ent:GetClass() == "npc_headcrab_fast" then
 			self:PlayAnim("seecrab", true, false, true)
@@ -495,7 +491,7 @@ function ENT:OnRangeAttack(status, enemy) -- old function ENT:MultipleRangeAttac
 				    if CurTime() >= self.FlameDuration then 
  		    	        self.FlameDuration = CurTime() +0.5
 				        if self.FlameOn == true	then
-				        self:DoFlameDamage(ent) end
+				        self:DoFlameDamage(ent) end 
 				    end
 			    if not self.IsPoisonBs and self.DistoEnemy < self.fRangeDistanceFlame then return end -- don't let pass next except poison
 			    end
@@ -545,12 +541,10 @@ end
 function ENT:DoFlameDamage(ent)
 	local dist = self.fRangeDistanceFlame
 	local dmg = self.FlameAttackDmg
-	//local posDmg = self.MeleeAttackDamageDistance
 	local dmgorigen = self:GetPos()+self:GetForward()*50 + self:GetUp()*20
-	//local conewidth = 
 	--for k, ent in pairs(ents.FindInSphere(dmgorigen, dist)) do
-		if self.Immune_Fire==true then 
-		    if IsValid(ent) then
+		if IsValid(ent) then
+            if self.Immune_Fire==true then 
 				local posEnemy = ent:GetPos()
 				local angToEnemy = self:CustomHLRenaissanceGetAngleToPos(posEnemy).y
 				if (angToEnemy <= 70 && angToEnemy >= 0) || (angToEnemy <= 360 && angToEnemy >= 290) then
@@ -569,13 +563,26 @@ function ENT:DoFlameDamage(ent)
 					end
 				end
 			end
-		end	
-	--end
+		end
 		local CheckIfPlayer = false
 		if IsValid(self) then
 			CheckIfPlayer = !self:IsPlayer()
 		end
-		util.VJ_SphereDamage(self, self, dmgorigen, self.FlameDmgRadius, self.FlameAttackDmg, self.FlameDamageType, CheckIfPlayer, true, {Force=1, UpForce=0, DamageAttacker=self:IsPlayer(),UseConeDegree=self.FlameConeDmgDegree,UseConeDirection=self:GetForward()})
+		local hitEnts = VJ.ApplyRadiusDamage(self, self, dmgorigen, self.FlameDmgRadius, self.FlameAttackDmg, self.FlameDamageType, CheckIfPlayer, true, {Force=1, UpForce=0, DamageAttacker=self:IsPlayer(),UseConeDegree=self.FlameConeDmgDegree,UseConeDirection=self:GetForward()})
+		if self.IsFrostBs==true then
+          	--local tblEnts = util.CustomHlrBlastDmg(self, self, tr.HitPos, 25, self.BeamDmg,
+		    --function(GetaTarget)
+				--    return (!GetaTarget:IsNPC() || self:Disposition(GetaTarget) <= 2) && (!GetaTarget:IsPlayer() || !tobool(GetConVarNumber("ai_ignoreplayers")))
+			    --end, DMG_DISSOLVE, false, self.VJ_NPC_Class)
+	        if not FreezeModule or not FreezeModule.FreezeEnemies then return end
+			if istable(hitEnts) and table.Count(hitEnts) > 0 then
+		    	for _, ent in ipairs(hitEnts) do
+                    if IsValid(ent) then --and ent ~= LocalPlayer() then
+                        FreezeModule.HLRCustomApplyFreeze(ent, 2, 2) -- increment by 2 freezelevel                        end
+                    end  
+                end 
+		    end
+		end
 end
 function ENT:AttackSpit(BsValidCurEnemy)
     pos = self:GetProjectilePosition(BsValidCurEnemy) 
@@ -657,7 +664,7 @@ function ENT:OnCreateDeathCorpse(dmginfo, hitgroup, corpse)
 	corpse:SetSkin(1)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:SetUpGibesOnDeath(dmginfo, hitgroup)
+function ENT:HandleGibOnDeath(dmginfo, hitgroup)
 	self.HasDeathSounds = false
 	if self.HasGibDeathParticles == true then
 	local posSpr = self:GetPos() + self:OBBCenter()
@@ -673,8 +680,8 @@ function ENT:SetUpGibesOnDeath(dmginfo, hitgroup)
 		    effectBlood2:SetScale(90)
 			util.Effect("VJ_Blood1",effectBlood2) 
 	    elseif self.Immune_Fire then
-	    effectBlood:SetColor(VJ_Color2Byte(Color(255,160,55)))
-		effectBlood:SetScale(160)
+	    	effectBlood:SetColor(VJ_Color2Byte(Color(255,160,55)))
+			effectBlood:SetScale(160)
 		util.Effect("VJ_Blood1",effectBlood)
 		elseif self.IsPoisonBs then
 	    effectBlood:SetColor(VJ_Color2Byte(Color(210,70,240)))
@@ -705,21 +712,11 @@ function ENT:SetUpGibesOnDeath(dmginfo, hitgroup)
 		util.Effect("StriderBlood",effectdata)
 	    end
 	end
-	for i=1,2 do
-	self:CreateGibEntity("obj_vj_gib","models/vj_hlr/gibs/agib1.mdl",{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,40))})
-	self:CreateGibEntity("obj_vj_gib","models/vj_hlr/gibs/agib2.mdl",{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,20))})
-	self:CreateGibEntity("obj_vj_gib","models/vj_hlr/gibs/agib3.mdl",{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,30))})
-	self:CreateGibEntity("obj_vj_gib","models/vj_hlr/gibs/agib4.mdl",{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,35))})
-	self:CreateGibEntity("obj_vj_gib","models/vj_hlr/gibs/agib5.mdl",{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,50))})
-	self:CreateGibEntity("obj_vj_gib","models/vj_hlr/gibs/agib6.mdl",{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,55))})
-	self:CreateGibEntity("obj_vj_gib","models/vj_hlr/gibs/agib7.mdl",{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,40))})
-	self:CreateGibEntity("obj_vj_gib","models/vj_hlr/gibs/agib8.mdl",{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,45))})
-	self:CreateGibEntity("obj_vj_gib","models/vj_hlr/gibs/agib9.mdl",{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,25))})
-	self:CreateGibEntity("obj_vj_gib","models/vj_hlr/gibs/agib10.mdl",{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,15))})
+	local gibs_All = {"models/vj_hlr/gibs/agib1.mdl", "models/vj_hlr/gibs/agib2.mdl", "models/vj_hlr/gibs/agib3.mdl", "models/vj_hlr/gibs/agib4.mdl", "models/vj_hlr/gibs/agib5.mdl", "models/vj_hlr/gibs/agib6.mdl", "models/vj_hlr/gibs/agib7.mdl", "models/vj_hlr/gibs/agib8.mdl", "models/vj_hlr/gibs/agib9.mdl", "models/vj_hlr/gibs/agib10.mdl"}
+	for i=1,10 do
+		local posVec = math.random(15,55)
+	    self:CreateGibEntity("obj_vj_gib",gibs_All,{BloodType="Yellow",BloodDecal="VJ_HLR_Blood_Yellow",Pos=self:LocalToWorld(Vector(0,0,posVec))})
     end
-	return true -- Return to true if it gibbed!
-end
-function ENT:HandleGibOnDeath(dmginfo, hitgroup)
-	--VJ_EmitSound(self, "vj_base/gib/splat.wav", 90, 100)
-	--return false
+    VJ.EmitSound(self, "gib/bodysplat.wav", 90, 100)
+    return true, {AllowSound=false,AllowCorpse=false}
 end

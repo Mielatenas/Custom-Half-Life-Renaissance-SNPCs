@@ -1244,7 +1244,7 @@ if self.energy < 0 then
     self:KingpinRenaissanceInterruptBeam(false)
 end	
 	if IsValid(self.entEnemy) then
-	    if self:CanSee(self.entEnemy) then
+	    if self:HLRCustomCanSee(self.entEnemy) then
 			local InRange = distToEne <= self.RangeAttackMaxDistance
 			--local bPlayerThrow = CurTime() >= self.nextPlayerThrow && self.entEnemy:IsPlayer()
 			if InRange then

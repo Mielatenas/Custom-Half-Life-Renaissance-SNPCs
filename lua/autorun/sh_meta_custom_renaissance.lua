@@ -57,7 +57,7 @@ function meta:GetConstrictedDirection(posStart, iLimitPitch, iLimitYaw, posEnd)
 	end
 	return angEnd:Forward()
 end
-
+/*
 function meta:CustomHLRenaissanceGetAttPos(att) --unused
 	if type(att) == "string" then
 		att = self:LookupAttachment(att)
@@ -85,15 +85,13 @@ function meta:CustomHLRenaissanceDistance(TArg) -- unused
 	else pos = TArg:GetPos() end
 	return self:GetPos():Distance(pos)
 end
-
-function meta:CustomHLRenaissanceOBBDistance(ent)
+function meta:CustomHLRenaissanceOBBDistance(ent) -- unused
 	local posTarget = ent:NearestPoint(self:GetPos() +ent:OBBCenter())
 	local posSelf = self:NearestPoint(ent:GetPos() +self:OBBCenter())
 	posTarget.z = ent:GetPos().z
 	posSelf.z = self:GetPos().z
 	return posSelf:Distance(posTarget)
 end
-
 function meta:CustomHLRenaissancePosInViewCone(pos, fDeg) --unused
 	fDeg = fDeg || 45
 	local i = 0
@@ -105,7 +103,7 @@ end
 
 function meta:CustomHLRenaissanceEntInViewCone(ent, fDeg)
 	return self:CustomHLRenaissancePosInViewCone(ent:GetPos(), fDeg)
-end
+end */
 /*
 local tblEntsNoCollide = {}
 local tblEntsNoCollideByClass = {}

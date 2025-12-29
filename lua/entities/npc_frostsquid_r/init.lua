@@ -19,7 +19,7 @@ ENT.AllowIgnition = false -- Can this SNPC be set on fire?
 ENT.CanUseFlame = true
 ENT.FlameDamageType = DMG_GENERIC
 ENT.IsFrostBs = true
-ENT.FlameAttackDmg = 6
+ENT.FlameAttackDmg = 0.4
 
 ENT.DamageScales = {
 	[DMG_BURN] = 2,
@@ -57,7 +57,7 @@ function ENT:FlameAttack()
 			local posEnt = ent:GetPos()
 			local yaw = self:CustomHLRenaissanceGetAngleToPos(posEnt,self:GetAimAngles()).y
 			if((yaw <= 70 && yaw >= 0) || (yaw <= 360 && yaw >= 290)) then
-				ent:SetFrozen(16)
+				--ent:SetFrozen(16)
 			end
 		end
 	end

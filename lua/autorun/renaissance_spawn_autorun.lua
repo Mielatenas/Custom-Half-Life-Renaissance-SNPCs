@@ -1,13 +1,13 @@
 if (!file.Exists("autorun/vj_base_autorun.lua","LUA")) then return end
 include('autorun/vj_controls.lua')
+include("autorun/sh_meta_custom_renaissance.lua")
+include("autorun/sh_hooks_custom_renaissance.lua")
 if(SERVER) then
 	AddCSLuaFile("autorun/sh_meta_custom_renaissance.lua")
+	AddCSLuaFile("autorun/sh_hooks_custom_renaissance.lua")
 	include("autorun/sv_meta_custom_renaissance.lua")
-	--include("hlrenaissance_custom_funcs.lua")
 end
-include("autorun/sh_meta_custom_renaissance.lua")
-
-
+    ------------------------------------------------------------
 local spawnCategory = "HL Renaissance Custom"
 
 VJ.AddCategoryInfo(spawnCategory, {Icon = "icons/hlrc.png"})
@@ -26,14 +26,14 @@ game.AddDecal("HLR_Splat_Ice",{"decals/slime_splat_ice","decals/slime_splat_ice_
 game.AddDecal("HLR_Splat_Toxic",{"decals/slime_splat_toxic","decals/slime_splat_toxic_02","decals/slime_splat_toxic_03","decals/slime_splat_toxic_04"})
 game.AddDecal("HLR_Splat_Poison",{"decals/slime_splat_poison","decals/slime_splat_poison_02","decals/slime_splat_poison_03","decals/slime_splat_poison_04"})
 game.AddDecal("HLR_Splat_Hybrid",{"decals/slime_splat_white","decals/slime_splat_white_02","decals/slime_splat_white_03","decals/slime_splat_white_04"})
-
+-- Remember: all sileverlan's particles must stay as they were in SLVBase for compatibility or overriding reasons
 game.AddParticles("particles/blood_impact_blue.pcf")
 game.AddParticles("particles/flame_gargantua.pcf")
 game.AddParticles("particles/icesphere.pcf")
 game.AddParticles("particles/magic_spells.pcf") -- Kingpin R beam impact
 //game.AddParticles("particles/magic_spells02.pcf")
 //game.AddParticles("particles/alien_slave.pcf") --deleted
-game.AddParticles("particles/magic_spells02_toxi.pcf") --toxic ring
+game.AddParticles("particles/hlrc_spells.pcf") --toxic ring and ice for freezelevel
 --game.AddParticles("particles/magic01.pcf") -- here unused toxic sticky mines, ice and fire effects
 --game.AddParticles("particles/magic04.pcf") -- life drain beam, type trace -- for a new attack? "magic_spell_lifedrain_beam03"
 --game.AddParticles("particles/mortarsynth.pcf") -- deleted 
@@ -107,9 +107,12 @@ for k, v in pairs({
 		"poisonsquid_splash_smoke1",
 		"poisonsquid_sphere_trail", -- trace
 		"poisonsquid_spores1",
-        --magic_spells02_toxi.pcf-- 
-        "mine_sigil_toxic01",
+        --hlrc_spells.pcf-- 
+        "mine_sigil_toxic01", 
         "toxicsquid_gas_toxic01", -- Toxic mines
+        "frostsquid_ice_mist", -- to attach
+        "frostsquid_ice_snowflakes",
+        "frostsquid_ice_glow1",
 		"tor_beam_charge", -- not sure if this is tor drain attack or an unused one
 		"tor_discharge", -- tor staff melee attack
 		"tor_projectile", -- main projectile
@@ -136,6 +139,8 @@ end
 local CVars = {
 	["hlrcustom_multihealth"] = 1,
 	["hlrcustom_multidmg"] = 1,
+	["hlrcustom_freeze_enemy"] = 1,
+	["hlrcustom_freeze_resistance"] = 10000,
     ["hlrcustom_toxic_mines"] = 1,
     ["hlrcustom_toxic_mines_max"] = 70
 }
@@ -145,13 +150,31 @@ for k,v in pairs(CVars) do
 	end
 end
 if CLIENT then
+    local ClientCVars = {
+    	["hlrcustom_freeze_bones"] = 4,
+    	["hlrcustom_freeze_maxdraw"] = 100,
+    }
+    for k, v in pairs(ClientCVars) do
+        if not ConVarExists(k) then
+            CreateClientConVar(k, v, true, false, "HLRC client config")
+        end
+    end
+end
+if CLIENT then
 	language.Add( "hlrcustom_multihealth", "Health value multiplier")
 	language.Add( "hlrcustom_multidmg", "Multiply damage inflicted by")	
 	language.Add( "hlrcustom_multihealth.help", "Multiply HLR Custom Snpc's health, Default: 1")
 	language.Add( "hlrcustom_multidmg.help", "Adjust damage inflicted by HLR Custom Snpc's,some values will only apply to new-created SNPCs, Default: 1")
 
-	--language.Add( "hlrcustom_freeze_enemy", "Frost enemies? Default: 1")
-	--language.Add( "hlrcustom_freeze_enemy.help", "Allow Frostsquid breath and Frozen Snark get enemies frozen")
+	language.Add( "hlrcustom_freeze_enemy", "Frost enemies?")
+	language.Add( "hlrcustom_freeze_enemy.help", "Allows Frostsquid breath and Frozen Snark get enemies frozen. Requires restart")
+	language.Add( "hlrcustom_freeze_resistance", "how resistant are entities to freeze")
+	language.Add( "hlrcustom_freeze_resistance.help", "scales freeze effectiveness per entity health, a value of 5000 = if entity has 5000 hp or more then it will be nearly immune. Default: 10000")
+	language.Add( "hlrcustom_freeze_bones", "Bones to freeze per entity")
+	language.Add( "hlrcustom_freeze_bones.help", "max bones used for client side ice particles to attach to, optimize as you want. Default: 4")
+	language.Add( "hlrcustom_freeze_maxdraw", "max entities to draw ice-overlays on")
+	language.Add( "hlrcustom_freeze_maxdraw.help", "per frame how many entities will render as frozen on client which players potentially see from their position, taking into account the PVS (Potential Visibility Set). Default: 100")
+
 	language.Add( "hlrcustom_toxic_mines", "Toxicsquid sticky mines")
 	language.Add( "hlrcustom_toxic_mines.help", "Enable/Disable mines that do damage overtime and stick to entities")
 	language.Add( "hlrcustom_toxic_mines_max", "Toxicsquid max sticky mines")
@@ -176,13 +199,36 @@ local function HLR_Custom_Menu(TitleHp)
 		Help = true
 	})
 	local AIoptions = TitleHp:AddControl("ControlPanel", {Label = "AI settings", Closed = false})
-/*
 
 	AIoptions:AddControl("CheckBox", {
 		Label = "#hlrcustom_freeze_enemy", 
-		Command = "hlrcustom_freeze_enemy", 
+		Command = "hlrcustom_freeze_enemy",
+		Help = true
 	})
-*/
+	AIoptions:AddControl("Slider", {
+		Label = "#hlrcustom_freeze_resistance", 
+		Type = "Integer",
+		Min = "5000",
+		Max = "999999",
+		Command = "hlrcustom_freeze_resistance",
+		Help = true
+	})
+	AIoptions:AddControl("Slider", {
+		Label = "#hlrcustom_freeze_bones", 
+		Type = "Integer",
+		Min = "0",
+		Max = "20",
+		Command = "hlrcustom_freeze_bones",
+		Help = true
+	})
+	AIoptions:AddControl("Slider", {
+		Label = "#hlrcustom_freeze_maxdraw", 
+		Type = "Integer",
+		Min = "20",
+		Max = "1000",
+		Command = "hlrcustom_freeze_maxdraw",
+		Help = true
+	})
 	AIoptions:AddControl("CheckBox", {
 		Label = "#hlrcustom_toxic_mines", 
 		Command = "hlrcustom_toxic_mines",

@@ -4,10 +4,9 @@ AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 
 ENT.PhysicsInitType = SOLID_VPHYSICS
+ENT.CollisionBehavior = VJ.PROJ_COLLISION_PERSIST
 
 ENT.RemoveOnHit = false -- Should it remove itself when it touches something? | It will run the hit sound, place a decal, etc.
-ENT.CollideCodeWithoutRemoving = true -- If RemoveOnHit is set to false, you can still make the projectile deal damage, place a decal, etc.
-ENT.NextCollideWithoutRemove = VJ_Set(0.5, 1) -- Time until it can run the code again
 
 ENT.DoesRadiusDamage = true -- Should it do a blast damage when it hits something?
 ENT.RadiusDamageRadius = 80 -- How far the damage go? The farther away it's from its enemy, the less damage it will do | Counted in world units
@@ -22,7 +21,7 @@ ENT.DoesDirectDamage = true -- Should it do a direct damage when it hits somethi
 ENT.DirectDamage = 1 -- How much damage should it do when it hits something
 ENT.DirectDamageType = DMG_GENERIC -- Damage type
 
-function ENT:CustomOnInitialize()
+function ENT:Init()
 	self:SetModel("models/props_junk/watermelon01_chunk02c.mdl")
 	self:SetMaterial("invis")
 	self:SetMoveCollide(3)
@@ -69,7 +68,7 @@ end
 function ENT:SetOrbTarget(target)
 	self.OrbTarget = target
 end
-function ENT:CustomOnThink()
+function ENT:OnThink()
 	local phys = self:GetPhysicsObject()
 	local dir = self:GetVelocity():GetNormalized()
 		if IsValid(phys) then
@@ -147,8 +146,7 @@ function ENT:CustomOnThink()
 	if CurTime() < self.delayRemove then return end
 	self:Remove()
 end
-
-function ENT:CustomOnCollideWithoutRemove(data, physobj)
+function ENT:OnCollisionPersist(data, phys) -- Called when collision behavior is set to "PROJ_COLLISION_PERSIST"
 	local ent = data.HitEntity
 	if IsValid(ent) && (ent:IsPlayer() || ent:IsNPC()) then
 		if !IsValid(self.entOwner) || self.entOwner:Disposition(ent) <= 2 then

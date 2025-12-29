@@ -5,8 +5,7 @@ include('shared.lua')
 	No parts of this code or any of its contents may be reproduced, copied, modified or adapted,
 	without the prior written consent of the author, unless otherwise indicated for stand-alone materials.
 -----------------------------------------------*/
-
-function ENT:DrawTraceLine(tr)
+function ENT:DrawTraceLine(tr) -- debug for kingpin tracers
     -- Draw a red line from start to hit position
     debugoverlay.Line(tr.StartPos, tr.HitPos, 5, Color(255, 0, 0), true)
     -- Draw a green box at the hit position

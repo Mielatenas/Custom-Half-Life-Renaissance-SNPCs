@@ -1,0 +1,10 @@
+"UnlitGeneric"
+{
+	//"$additive" 1
+	"$baseTexture" "models/Gibs/ice/ice"
+        "$translucent" "1"
+        //"$vertexalpha" "1"
+        //"$vertexcolor" "1"
+        "$model" "1"
+        "$selfillum" "1"
+}

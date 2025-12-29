@@ -8,12 +8,13 @@ ENT.Model = {"models/icesphere_small.mdl","models/icesphere_medium.mdl", "models
 
 ENT.DoesRadiusDamage = true
 ENT.RadiusDamageRadius = 30
-ENT.RadiusDamage = 6
+ENT.RadiusDamage = 2
 ENT.RadiusDamageUseRealisticRadius = true
 ENT.RadiusDamageType = DMG_DIRECT
 ENT.RadiusDamageForce = 4 -- Put the force amount it should apply | false = Don't apply any force
 ENT.DoesDirectDamage = true -- Should it do a direct damage when it hits something?
 ENT.DirectDamage = 1 -- How much damage should it do when it hits something
+--ENT.CollisionDecal = {"HLR_Splat_Poison"}
 
 ENT.DecalTbl_DeathDecals = {"HLR_Splat_Ice"}
 ENT.SoundTbl_Idle = {"npc/bullsquid/flame_run_lp.wav"}
@@ -25,7 +26,7 @@ ENT.OnCollideSoundLevel = 70
 ENT.NextSoundTime_Idle = VJ_Set(1, 4)
 ENT.HasStartupSounds = false
 
-function ENT:CustomOnInitialize()
+function ENT:Init()
 	timer.Simple(8,function() if IsValid(self) then self:Remove() end end)
 	self:SetMoveCollide(COLLISION_GROUP_PROJECTILE)
 	self:SetCollisionGroup(COLLISION_GROUP_PROJECTILE)
@@ -61,7 +62,7 @@ function ENT:CustomOnInitialize()
 	timer.Simple(0.6,function() if IsValid(self) then ParticleEffectAttach("icesphere_trail", PATTACH_ABSORIGIN_FOLLOW, self, 0) end end)
 
 end
-function ENT:CustomOnThink()
+function ENT:OnThink()
 	if self.HasStartupSounds==false then
         local pos = self:GetPos()
         local trace = util.TraceLine({
@@ -101,6 +102,17 @@ function ENT:SetEntityOwner(ent) -- unused
 	self.entOwner = ent
 end
 */
+function ENT:OnDealDamage(data, phys, hitEnts)
+	if not FreezeModule or not FreezeModule.FreezeEnemies then return end
+	if hitEnts then
+       -- FreezeModule.HLRCustomApplyFreeze(data.HitEntity, 10, 2)
+        for _, ent in ipairs(hitEnts) do -- entities that can be frozen
+            if IsValid(ent) then
+                FreezeModule.HLRCustomApplyFreeze(ent, 5, 2)
+            end
+        end  
+    end
+end
 function ENT:Splash(data, physobj)
     self:DealDamage(data, phys)	//print(iSize)
 	self.bCollided = true
@@ -124,15 +136,16 @@ function ENT:Splash(data, physobj)
 		if (v:IsNPC() || v:IsPlayer()) && v != self.entOwner then
 			local posDmg = v:NearestPoint(pos)
 			local iFreeze = math.Clamp((250 -pos:Distance(posDmg)) /250 *iFreeze, 1, iFreeze)
-			//v:SetFrozen(iFreeze)
 		end
 	end
 	timer.Simple(0.1, function() if IsValid(self) then self:Remove() end end)
 end
-
-function ENT:CustomOnPhysicsCollide(data, phys) -- Return false to disable the base functions from running
+function ENT:OnCollision(data, phys) -- Return true to override the base code
 	if !data.HitEntity || self.bCollided then return true end
-	self:Splash(data, phys)
-	return true
-end
 
+	self:Splash(data, phys)
+	return false
+end
+function ENT:Touch(ent)
+
+end
